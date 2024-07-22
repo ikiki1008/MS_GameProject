@@ -8,14 +8,16 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 
+DEFINE_LOG_CATEGORY(LogMsPlayer); // Define the log category
+
 AMsPlayer::AMsPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
+	//SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 
-	SpringArm->SetupAttachment(RootComponent);
+	//SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
@@ -41,9 +43,12 @@ void AMsPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMsPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMsPlayer::MoveRight);
 	PlayerInputComponent->BindAxis("TurnCamera", this, &AMsPlayer::TurnCamera);
-	PlayerInputComponent->BindAxis("LookUp", this, &AMsPlayer::LookUp);
+	//PlayerInputComponent->BindAxis("LookUp", this, &AMsPlayer::LookUp);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMsPlayer::Jump);
+
+	Speed = 300.0f;
+	Life = 1000.0f;
 }
 
 void AMsPlayer::MoveForward(float InputValue) {
@@ -60,9 +65,21 @@ void AMsPlayer::TurnCamera(float InputValue) {
 	AddControllerYawInput(InputValue);
 }
 
-void AMsPlayer::LookUp(float InputValue) {
-	AddControllerPitchInput(InputValue);
+float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Life -= ActualDamage;
+	UE_LOG(LogMsPlayer, Warning, TEXT(" #### Current Life: %f"), Life);
+
+	if (Life <= 0) {
+		//player dead
+	}
+
+	return ActualDamage;
 }
+
+
+
 
 
 

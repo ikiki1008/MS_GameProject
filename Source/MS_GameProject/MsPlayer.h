@@ -28,16 +28,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
-	UPROPERTY(EditAnywhere)
-	class USpringArmComponent* SpringArm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Life;
+
+	//UPROPERTY(EditAnywhere)
+	//class USpringArmComponent* SpringArm;
 
 	void MoveForward(float InputValue);
 	void MoveRight(float InputValue);
 	void TurnCamera(float InputValue);
-	void LookUp(float InputValue);
+	//void LookUp(float InputValue);
 
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogMsPlayer, Log, All);
