@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,18 +7,14 @@
 UCLASS()
 class MS_GAMEPROJECT_API AMsEnemyController : public AAIController
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     AMsEnemyController();
+    virtual void OnPossess(APawn* InPawn) override;
 
 protected:
     virtual void BeginPlay() override;
-    virtual void OnPossess(APawn* InPawn);
-
-public:
-    UFUNCTION(BlueprintCallable)
-    void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 private:
     UPROPERTY(VisibleAnywhere, Category = "AI")
@@ -27,5 +22,17 @@ private:
 
     UPROPERTY(VisibleAnywhere, Category = "AI")
     class UAISenseConfig_Sight* SightConfig;
-	
+
+    UFUNCTION()
+    void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+    void MoveToPlayer(AActor* PlayerActor);
+
+    class UCapsuleComponent* CapsuleComponent;
+
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogMsEnemyController, Log, All);
