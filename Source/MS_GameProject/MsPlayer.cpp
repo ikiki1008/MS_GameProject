@@ -1,10 +1,8 @@
-
+#include "MsPlayer.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/KismetMathLibrary.h"
-
-#include "MsPlayer.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
 
@@ -72,7 +70,7 @@ float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	UE_LOG(LogMsPlayer, Warning, TEXT(" #### Current Life: %f"), Life);
 
 	if (Life <= 0) {
-		//player dead
+		UE_LOG(LogMsPlayer, Warning, TEXT(" #### Player Dead $$$$$ "));
 	}
 
 	return ActualDamage;
