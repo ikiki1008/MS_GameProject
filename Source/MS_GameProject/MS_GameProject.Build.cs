@@ -14,6 +14,13 @@ public class MS_GameProject : ModuleRules
 			"Engine", 
 			"InputCore", 
 			"EnhancedInput",
-			"NavigationSystem"});
-	}
+			"NavigationSystem",
+			"UMG"});
+
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"Slate",
+			"SlateCore"
+		});
+    }
 }
