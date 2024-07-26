@@ -5,27 +5,33 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "PlayerHPBar.h"
 
 DEFINE_LOG_CATEGORY(LogMsPlayer); // Define the log category
 
 AMsPlayer::AMsPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	//SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-
-	//SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
-
-	MovementSpeed = 400.0f;
+	MovementSpeed = 200.0f;
+	MaxHP = 1000.0f;
+	CurrentHP = 1000.0f;
 }
 
 void AMsPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (PlayerHPProgress) {
+		PlayerHPBar = CreateWidget<UPlayerHPBar>(GetWorld(), PlayerHPProgress);
+		if (PlayerHPBar) {
+			PlayerHPBar->AddToViewport();
+			UpdateHPBar();
+		}
+	}
 }
 
 void AMsPlayer::Tick(float DeltaTime)
@@ -41,17 +47,13 @@ void AMsPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMsPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMsPlayer::MoveRight);
 	PlayerInputComponent->BindAxis("TurnCamera", this, &AMsPlayer::TurnCamera);
-	//PlayerInputComponent->BindAxis("LookUp", this, &AMsPlayer::LookUp);
-
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMsPlayer::Jump);
-
-	Speed = 300.0f;
-	Life = 1000.0f;
 }
 
 void AMsPlayer::MoveForward(float InputValue) {
 	FVector ForwardDirection = GetActorForwardVector();
 	AddMovementInput(ForwardDirection, InputValue);
+	UE_LOG(LogMsPlayer, Warning, TEXT(" #### Current Life: %f"), CurrentHP);
 }
 
 void AMsPlayer::MoveRight(float InputValue) {
@@ -66,14 +68,21 @@ void AMsPlayer::TurnCamera(float InputValue) {
 float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	Life -= ActualDamage;
-	UE_LOG(LogMsPlayer, Warning, TEXT(" #### Current Life: %f"), Life);
+	CurrentHP -= ActualDamage;
+	UE_LOG(LogMsPlayer, Warning, TEXT(" #### Current Life: %f"), CurrentHP);
 
-	if (Life <= 0) {
+	if (CurrentHP <= 0) {
 		UE_LOG(LogMsPlayer, Warning, TEXT(" #### Player Dead $$$$$ "));
 	}
 
+	UpdateHPBar();
 	return ActualDamage;
+}
+
+void AMsPlayer::UpdateHPBar() {
+	if (PlayerHPBar) {
+		PlayerHPBar->UpdateHP(CurrentHP, MaxHP);
+	}
 }
 
 
