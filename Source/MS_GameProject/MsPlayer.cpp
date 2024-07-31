@@ -95,6 +95,16 @@ float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
     return ActualDamage;
 }
 
+void AMsPlayer::AddHP(float Amount) {
+    Life += Amount;
+    if (Life > 1000.0f) {
+        Life = 1000.0f;
+    }
+
+    UE_LOG(LogMsPlayer, Warning, TEXT(" #### Health Modified: %f"), Life)
+    UpdateHPBar(Life);
+}
+
 void AMsPlayer::UpdateHPBar(float CurrentHP) {
     if (PlayerHPBar) {
         PlayerHPBar->UpdateHP(CurrentHP);
