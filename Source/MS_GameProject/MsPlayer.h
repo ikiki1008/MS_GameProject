@@ -23,11 +23,16 @@ public:
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<class UUserWidget> PlayerHPProgress;
+
     UPROPERTY()
     class UPlayerHPBar* PlayerHPBar;
+
     UPROPERTY(BlueprintReadWrite, Category = "Player Life")
     float Life;
 
+    UFUNCTION(BlueprintCallable, Category = "Dead")
+    void CallDie();
+    
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;

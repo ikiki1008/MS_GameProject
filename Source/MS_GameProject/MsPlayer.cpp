@@ -5,7 +5,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "PlayerHPBar.h"
-#include "GameFramework/DamageType.h"  
+#include "GameFramework/DamageType.h"
 #include "Engine/EngineTypes.h"
 
 DEFINE_LOG_CATEGORY(LogMsPlayer);
@@ -51,7 +51,6 @@ void AMsPlayer::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     UE_LOG(LogMsPlayer, Warning, TEXT("OnOverlap End"));
 }
 
-
 void AMsPlayer::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
@@ -89,6 +88,7 @@ float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 
     if (Life <= 0) {
         UE_LOG(LogMsPlayer, Warning, TEXT(" #### Player Dead $$$$$ "));
+        CallDie(); // 블루프린트에서 정의된 Die 함수 호출
     }
 
     UpdateHPBar(Life);
@@ -109,4 +109,14 @@ void AMsPlayer::UpdateHPBar(float CurrentHP) {
     if (PlayerHPBar) {
         PlayerHPBar->UpdateHP(CurrentHP);
     }
+}
+
+void AMsPlayer::CallDie() {
+
+    UFunction* DieFunction = FindFunction(TEXT("Die")); // "Die"는 블루프린트에서 정의한 함수의 이름입니다.
+    if (DieFunction) {
+        UE_LOG(LogMsPlayer, Warning, TEXT(" is reached here?? "));
+        ProcessEvent(DieFunction, nullptr);
+    }
+    UE_LOG(LogMsPlayer, Warning, TEXT(" Call Die function end"));
 }
