@@ -45,6 +45,28 @@ void AMsEnemyController::BeginPlay() {
     GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AMsEnemyController::CheckPerception, 1.0f, true);
 }
 
+void AMsEnemyController::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
+
+    // Check if player is dead and update state
+    TArray<AActor*> PerceivedActors;
+    AIPerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
+
+    for (AActor* Actor : PerceivedActors) {
+        AMsPlayer* Player = Cast<AMsPlayer>(Actor);
+        if (Player) {
+            if (IsPlayerDead(Player)) {
+                AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+                if (EnemyRat) {
+                    EnemyRat->RandomWalk(true);
+                }
+                UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player dead *****"));
+                return;  
+            }
+        }
+    }
+}
+
 void AMsEnemyController::OnPossess(APawn* InPawn) {
     Super::OnPossess(InPawn);
 }
@@ -57,21 +79,35 @@ void AMsEnemyController::OnSensed(const TArray<AActor*>& UpdatedActors) {
         AIPerceptionComponent->GetActorsPerception(Actor, Information);
 
         if (Information.LastSensedStimuli.Num() > 0 && Information.LastSensedStimuli[0].WasSuccessfullySensed()) {
-            AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
-            if (EnemyRat) {
-                EnemyRat->RandomWalk(true);
+            AMsPlayer* Player = Cast<AMsPlayer>(Actor);
+
+            if (Player) {
+                if (IsPlayerDead(Player)) {
+                    // Stop attacking and start random walk
+                    AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+                    if (EnemyRat) {
+                        EnemyRat->RandomWalk(true);
+                    }
+                    UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player dead *****"));
+                    bPlayerDetected = false;
+                    break;
+                }
+
+                AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+                if (EnemyRat) {
+                    EnemyRat->RandomWalk(true);
+                }
+
+                bPlayerDetected = true;
+                SetFocus(Actor);
+                FVector PlayerLocation = Actor->GetActorLocation();
+                MoveToLocation(PlayerLocation);
+
+                UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player detected and moving towards! *****"));
+                UGameplayStatics::ApplyDamage(Actor, 50.0f, this, GetPawn(), UDamageType::StaticClass());
+                UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% Player overlapped and damaged from the front! %%%%"));
+                break;
             }
-
-            bPlayerDetected = true;
-
-            SetFocus(Actor);
-            FVector PlayerLocation = Actor->GetActorLocation();
-            MoveToLocation(PlayerLocation);
-
-            UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player detected and moving towards! *****"));
-            UGameplayStatics::ApplyDamage(Actor, 50.0f, this, GetPawn(), UDamageType::StaticClass());
-            UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% Player overlapped and damaged from the front! %%%%"));
-            break;
         }
     }
 
@@ -98,4 +134,12 @@ void AMsEnemyController::CheckPerception() {
     TArray<AActor*> UpdatedActors;
     AIPerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), UpdatedActors);
     OnSensed(UpdatedActors);
+}
+
+bool AMsEnemyController::IsPlayerDead(AActor* PlayerActor) {
+    AMsPlayer* Player = Cast<AMsPlayer>(PlayerActor);
+    if (Player) {
+        return Player->Life <= 0;
+    }
+    return false;
 }

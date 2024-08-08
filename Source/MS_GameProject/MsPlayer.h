@@ -31,7 +31,10 @@ public:
     float Life;
 
     UFUNCTION(BlueprintCallable, Category = "Dead")
-    void CallDie();
+    bool CallDie(bool dead);
+
+    UFUNCTION(BlueprintCallable, Category = "Attack")
+    void CallAttack();
     
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

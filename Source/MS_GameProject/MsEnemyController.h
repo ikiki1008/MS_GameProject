@@ -27,6 +27,7 @@ public:
 protected:
     virtual void BeginPlay() override;
     virtual void OnPossess(APawn* InPawn) override;
+    virtual void Tick(float DeltaTime) override;
 
     UFUNCTION()
     void OnSensed(const TArray<AActor*>& UpdatedActors);
@@ -40,6 +41,7 @@ protected:
 
 private:
     void AttackPlayer(AActor* Player);
+    bool IsPlayerDead(AActor* Player);
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMsEnemyController, Log, All);

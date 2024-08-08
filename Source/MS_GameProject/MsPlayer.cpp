@@ -88,7 +88,7 @@ float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 
     if (Life <= 0) {
         UE_LOG(LogMsPlayer, Warning, TEXT(" #### Player Dead $$$$$ "));
-        CallDie(); // 블루프린트에서 정의된 Die 함수 호출
+        CallDie(true); // 블루프린트에서 정의된 Die 함수 호출
     }
 
     UpdateHPBar(Life);
@@ -111,12 +111,23 @@ void AMsPlayer::UpdateHPBar(float CurrentHP) {
     }
 }
 
-void AMsPlayer::CallDie() {
+bool AMsPlayer::CallDie(bool dead) {
+    if (dead) {
+        GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 
-    UFunction* DieFunction = FindFunction(TEXT("Die")); // "Die"는 블루프린트에서 정의한 함수의 이름입니다.
-    if (DieFunction) {
-        UE_LOG(LogMsPlayer, Warning, TEXT(" is reached here?? "));
-        ProcessEvent(DieFunction, nullptr);
+        UFunction* DieFunction = FindFunction(TEXT("Die")); // "Die"는 블루프린트에서 정의한 함수의 이름
+        if (DieFunction) {
+            ProcessEvent(DieFunction, nullptr);
+        }
+        return true;
     }
-    UE_LOG(LogMsPlayer, Warning, TEXT(" Call Die function end"));
+    return false;
+}
+
+void AMsPlayer::CallAttack() {
+    UFunction* AttackFunction = FindFunction(TEXT("Attack"));
+    if (AttackFunction) {
+        ProcessEvent(AttackFunction, nullptr);
+    }
 }
