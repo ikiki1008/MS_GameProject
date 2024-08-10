@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "MsPlayer.h"
 #include "EnemyRat.h"
+#include "EnemyFish.h"
 #include "GameFramework/DamageType.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
@@ -57,9 +58,18 @@ void AMsEnemyController::Tick(float DeltaTime) {
         if (Player) {
             if (IsPlayerDead(Player)) {
                 AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+                AEnemyFish* EnemyFish = Cast<AEnemyFish>(GetPawn());
+
                 if (EnemyRat) {
                     EnemyRat->RandomWalk(true);
                 }
+                else if (EnemyFish) {
+                    EnemyFish->RandomWalk(true);
+                }
+                else {
+
+                }
+
                 UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player dead *****"));
                 return;  
             }
@@ -85,17 +95,28 @@ void AMsEnemyController::OnSensed(const TArray<AActor*>& UpdatedActors) {
                 if (IsPlayerDead(Player)) {
                     // Stop attacking and start random walk
                     AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+                    AEnemyFish* EnemyFish = Cast<AEnemyFish>(GetPawn());
+
                     if (EnemyRat) {
                         EnemyRat->RandomWalk(true);
                     }
+                    else if (EnemyFish) {
+                        EnemyRat->RandomWalk(true);
+                    }
+
                     UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player dead *****"));
                     bPlayerDetected = false;
                     break;
                 }
 
                 AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+                AEnemyFish* EnemyFish = Cast<AEnemyFish>(GetPawn());
+
                 if (EnemyRat) {
                     EnemyRat->RandomWalk(true);
+                }
+                else if (EnemyFish) {
+                    EnemyFish->RandomWalk(true);
                 }
 
                 bPlayerDetected = true;
@@ -113,8 +134,13 @@ void AMsEnemyController::OnSensed(const TArray<AActor*>& UpdatedActors) {
 
     if (!bPlayerDetected) {
         AEnemyRat* EnemyRat = Cast<AEnemyRat>(GetPawn());
+        AEnemyFish* EnemyFish = Cast<AEnemyFish>(GetPawn());
+
         if (EnemyRat) {
             EnemyRat->RandomWalk(false);
+        }
+        else if (EnemyFish) {
+            EnemyFish->RandomWalk(false);
         }
     }
 }

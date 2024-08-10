@@ -27,4 +27,5 @@ private:
     class USoundBase* Sound;
 };
 
+//log ¼±¾ð
 DECLARE_LOG_CATEGORY_EXTERN(LogEnemyRat, Log, All);

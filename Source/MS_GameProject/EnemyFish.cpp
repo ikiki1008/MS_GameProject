@@ -1,33 +1,87 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "EnemyFish.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "NavigationSystem.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 
-// Sets default values
+DEFINE_LOG_CATEGORY(LogEnemyFish);
+
 AEnemyFish::AEnemyFish()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 사운드 컴포넌트 추가
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(RootComponent);
+
+	// 사운드 큐 로드
+	static ConstructorHelpers::FObjectFinder<USoundBase> SoundCueFinder(TEXT("/Script/Engine.SoundWave'/Game/MsSounds/Rat.Rat'"));
+	if (SoundCueFinder.Succeeded())
+	{
+		Sound = SoundCueFinder.Object;
+	}
 }
 
-// Called when the game starts or when spawned
+
 void AEnemyFish::BeginPlay()
 {
 	Super::BeginPlay();
+	RandomWalk(true);
 	
+	if (Sound) {
+		AudioComponent->SetSound(Sound);
+		AudioComponent->Play();
+	}
 }
 
-// Called every frame
 void AEnemyFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateSoundVolume();
 }
 
-// Called to bind functionality to input
-void AEnemyFish::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemyFish::RandomWalk(bool found) {
+	if (!found) {
+		UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+		if (NavSystem) {
+			FVector RandomLocation;
+			NavSystem->K2_GetRandomReachablePointInRadius(GetWorld(), GetActorLocation(), RandomLocation, 500.0f);
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
+			UE_LOG(LogEnemyFish, Warning, TEXT(" ***** the fish  is randomly walking.... *****"));
+		}
+	}
+	else {
+		UE_LOG(LogEnemyFish, Warning, TEXT(" ***** the fish is gonna go to the player.... *****"));
+	}
+}
+
+void AEnemyFish::UpdateSoundVolume()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (PlayerPawn)
+	{
+		float Distance = FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation());
+		float VolumeMultiplier = FMath::Clamp(1.0f - (Distance / 1000.0f), 0.0f, 1.0f);
 
+		if (VolumeMultiplier > 0.0f)
+		{
+			if (!AudioComponent->IsPlaying())
+			{
+				AudioComponent->Play();
+			}
+			AudioComponent->SetVolumeMultiplier(VolumeMultiplier);
+		}
+		else
+		{
+			if (AudioComponent->IsPlaying())
+			{
+				AudioComponent->Stop();
+			}
+		}
+	}
 }
+
 
