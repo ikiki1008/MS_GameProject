@@ -15,6 +15,8 @@ public class MS_GameProject : ModuleRules
 			"InputCore", 
 			"EnhancedInput",
 			"NavigationSystem",
+			"LevelSequence",
+			"MovieScene",
 			"UMG"});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

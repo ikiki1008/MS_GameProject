@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+Content/Characters/Enemies/Assets/Luminous_Monster/Textures/*.uasset filter=lfs diff=lfs merge=lfs -text
+Content/Characters/Enemies/Assets/Luminous_Monster/*.uasset filter=lfs diff=lfs merge=lfs -text

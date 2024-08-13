@@ -11,7 +11,14 @@ class MS_GAMEPROJECT_API AEnemyRat : public ACharacter
 
 public:
     AEnemyRat();
-    void RandomWalk(bool found);
+
+    // MsEnemyController의 상태를 참조하는 변수
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "RatAnime")
+    bool PlayerFound;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "RatAnime")
+    bool AttackToPlayer;
+
+   // void RandomWalk(bool found);
 
 protected:
     virtual void BeginPlay() override;
@@ -20,12 +27,18 @@ protected:
 private:
     void UpdateSoundVolume();
 
+    // 1초마다 플레이어 탐지 상태를 체크하는 함수
+    void CheckPerception();
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = "true"))
     class UAudioComponent* AudioComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
     class USoundBase* Sound;
+
+    // 타이머 핸들러
+    FTimerHandle PerceptionTimerHandle;
 };
 
-//log 선언
+// log 선언
 DECLARE_LOG_CATEGORY_EXTERN(LogEnemyRat, Log, All);

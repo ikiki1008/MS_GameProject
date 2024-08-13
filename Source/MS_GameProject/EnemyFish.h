@@ -11,7 +11,7 @@ class MS_GAMEPROJECT_API AEnemyFish : public ACharacter
 
 public:
 	AEnemyFish();
-	void RandomWalk(bool found);
+	void StartAnime(bool found);
 
 protected:
 	virtual void BeginPlay() override;

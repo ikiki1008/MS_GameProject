@@ -1,4 +1,5 @@
 #include "EnemyRat.h"
+#include "MsEnemyController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
@@ -8,8 +9,7 @@
 
 DEFINE_LOG_CATEGORY(LogEnemyRat);
 
-AEnemyRat::AEnemyRat()
-{
+AEnemyRat::AEnemyRat(){
     PrimaryActorTick.bCanEverTick = true;
 
     // 사운드 컴포넌트 추가
@@ -18,81 +18,62 @@ AEnemyRat::AEnemyRat()
 
     // 사운드 큐 로드
     static ConstructorHelpers::FObjectFinder<USoundBase> SoundCueFinder(TEXT("/Script/Engine.SoundWave'/Game/MsSounds/Rat.Rat'"));
-    if (SoundCueFinder.Succeeded())
-    {
+    if (SoundCueFinder.Succeeded()){
         Sound = SoundCueFinder.Object;
     }
+
+    PlayerFound = false;
+    AttackToPlayer = false;
 }
 
-void AEnemyRat::BeginPlay()
-{
+void AEnemyRat::BeginPlay(){
     Super::BeginPlay();
-    RandomWalk(false);
 
-    if (Sound)
-    {
+    if (Sound){
         AudioComponent->SetSound(Sound);
         AudioComponent->Play();
     }
+
+    // 1초마다 CheckPerception 함수를 호출하는 타이머 설정
+    GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyRat::CheckPerception, 1.0f, true);
 }
 
-void AEnemyRat::Tick(float DeltaTime)
-{
+void AEnemyRat::Tick(float DeltaTime){
     Super::Tick(DeltaTime);
     UpdateSoundVolume();
 }
 
-void AEnemyRat::RandomWalk(bool found)
-{
-    if (!GetController()) return;
-
-    if (!found) {
-        UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-        if (NavSystem){
-            FVector RandomLocation;
-            NavSystem->K2_GetRandomReachablePointInRadius(GetWorld(), GetActorLocation(), RandomLocation, 500.0f);
-            UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
-            UE_LOG(LogEnemyRat, Warning, TEXT(" ***** the mouse is randomly walking.... *****"));
-        }
-    }
-    else {
-        UE_LOG(LogEnemyRat, Warning, TEXT(" ***** the mouse is gonna go to the player.... *****"));
-    }
-}
-
-void AEnemyRat::UpdateSoundVolume()
-{
+void AEnemyRat::UpdateSoundVolume(){
     APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-    if (PlayerPawn)
-    {
+    if (PlayerPawn){
         float Distance = FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation());
         float VolumeMultiplier = FMath::Clamp(1.0f - (Distance / 1000.0f), 0.0f, 1.0f);
 
-        if (VolumeMultiplier > 0.0f)
-        {
-            if (!AudioComponent->IsPlaying())
-            {
+        if (VolumeMultiplier > 0.0f){
+            if (!AudioComponent->IsPlaying()){
                 AudioComponent->Play();
             }
             AudioComponent->SetVolumeMultiplier(VolumeMultiplier);
         }
-        else
-        {
-            if (AudioComponent->IsPlaying())
-            {
+        else {
+            if (AudioComponent->IsPlaying()) {
                 AudioComponent->Stop();
             }
         }
     }
 }
 
-//void AEnemyRat::MoveToPlayer()
-//{
-//    ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0); //Player character == number zero
-//    if (PlayerCharacter)
-//    {
-//        FVector PlayerLocation = PlayerCharacter->GetActorLocation();
-//        UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), PlayerLocation);
-//        UE_LOG(LogEnemyRat, Warning, TEXT(" ***** this mouse has found the Player *****"));
-//    }
-//}
+void AEnemyRat::CheckPerception(){
+    // 현재 컨트롤러를 가져옵니다.
+    AMsEnemyController* EnemyController = Cast<AMsEnemyController>(GetController());
+    if (EnemyController){
+        // AMsEnemyController의 IsPlayerDetected와 IsAttacking 상태를 가져옵니다.
+        PlayerFound = EnemyController->IsPlayerDetected;
+        AttackToPlayer = EnemyController->IsAttacking;
+
+        if (PlayerFound && AttackToPlayer){
+            UE_LOG(LogEnemyRat, Warning, TEXT(" ***** Player detected and attacking! *****"));
+            // 여기서 추가적인 행동을 정의할 수 있습니다.
+        }
+    }
+}
