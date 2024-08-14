@@ -73,6 +73,7 @@ void AMsEnemyController::OnSensed(const TArray<AActor*>& UpdatedActors) {
 
             if (Player) {
                 bPlayerDetectedThisFrame = true;
+                IsPlayerDetected = true;
 
                 if (IsPlayerDead(Player)) {
                     IsAttacking = false;
@@ -81,13 +82,12 @@ void AMsEnemyController::OnSensed(const TArray<AActor*>& UpdatedActors) {
                     break;
                 }
 
-                IsAttacking = true;
-                IsPlayerDetected = true;
                 //SetFocus(Actor);
                 FVector PlayerLocation = Actor->GetActorLocation();
                 MoveToLocation(PlayerLocation);
-
                 UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player detected and moving towards! *****"));
+
+                IsAttacking = true;
                 UGameplayStatics::ApplyDamage(Actor, 50.0f, this, GetPawn(), UDamageType::StaticClass());
                 UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% Player overlapped and damaged from the front! %%%%"));
                 break;

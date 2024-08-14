@@ -17,12 +17,21 @@ public:
     bool PlayerFound;
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "RatAnime")
     bool AttackToPlayer;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "RatAnime")
+    float Speed;
+
 
    // void RandomWalk(bool found);
 
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Rat Life")
+    float Life;
+
+    UFUNCTION(BlueprintCallable, Category = "Attack")
+    void CallRatAttack(bool Attack);
 
 private:
     void UpdateSoundVolume();

@@ -22,6 +22,8 @@ AEnemyRat::AEnemyRat(){
         Sound = SoundCueFinder.Object;
     }
 
+    Speed = 50.0f;
+    Life = 100.0f;
     PlayerFound = false;
     AttackToPlayer = false;
 }
@@ -63,17 +65,32 @@ void AEnemyRat::UpdateSoundVolume(){
     }
 }
 
+void AEnemyRat::CallRatAttack(bool Attack) {
+    UFunction* AttackMotion = FindFunction(TEXT("RatAttack"));
+    UFunction* IdleMotion = FindFunction(TEXT("RatIdle"));
+    if (AttackMotion) {
+        ProcessEvent(AttackMotion, nullptr);
+        UE_LOG(LogEnemyRat, Warning, TEXT(" ***** rat  start attack! *****"));
+    }
+    else {
+        ProcessEvent(IdleMotion, nullptr);
+    }
+}
+
 void AEnemyRat::CheckPerception(){
-    // 현재 컨트롤러를 가져옵니다.
     AMsEnemyController* EnemyController = Cast<AMsEnemyController>(GetController());
     if (EnemyController){
-        // AMsEnemyController의 IsPlayerDetected와 IsAttacking 상태를 가져옵니다.
         PlayerFound = EnemyController->IsPlayerDetected;
         AttackToPlayer = EnemyController->IsAttacking;
 
-        if (PlayerFound && AttackToPlayer){
+        if (AttackToPlayer){
             UE_LOG(LogEnemyRat, Warning, TEXT(" ***** Player detected and attacking! *****"));
-            // 여기서 추가적인 행동을 정의할 수 있습니다.
+            Speed = 100.0f;
+            CallRatAttack(true);
+        }
+        else {
+            Speed = 50.0f;
+            CallRatAttack(false);
         }
     }
 }
