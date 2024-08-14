@@ -20,6 +20,14 @@ AMsPlayer::AMsPlayer()
     MovementSpeed = 200.0f;
     Life = 1000.0f;
 
+    TurnSensitivity = 0.5f;
+    LookUpSensitivity = 0.5f;
+
+    MinPitch = 0.0f;   // 아래로 최대 0도
+    MaxPitch = 90.0f;    // 위로 최대 90도
+    MinYaw = -180.0f;     // 왼쪽으로 최대 180도
+    MaxYaw = 180.0f;      // 오른쪽으로 최대 180도
+
     GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMsPlayer::OnOverlapBegin);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMsPlayer::OnOverlapEnd);
 }
@@ -61,14 +69,27 @@ void AMsPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &AMsPlayer::MoveForward);
+    PlayerInputComponent->BindAxis("LookUp", this, &AMsPlayer::LookUp);
     PlayerInputComponent->BindAxis("MoveRight", this, &AMsPlayer::MoveRight);
     PlayerInputComponent->BindAxis("TurnCamera", this, &AMsPlayer::TurnCamera);
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMsPlayer::Jump);
+
 }
 
 void AMsPlayer::MoveForward(float InputValue) {
     FVector ForwardDirection = GetActorForwardVector();
     AddMovementInput(ForwardDirection, InputValue);
+}
+
+void AMsPlayer::LookUp(float InputValue) {
+    FRotator ControlRotation = GetControlRotation();
+    float NewPitch = ControlRotation.Pitch + InputValue * LookUpSensitivity;
+
+    // Pitch 값 제한
+    NewPitch = FMath::Clamp(NewPitch, MinPitch, MaxPitch);
+
+    ControlRotation.Pitch = NewPitch;
+    GetController()->SetControlRotation(ControlRotation);
 }
 
 void AMsPlayer::MoveRight(float InputValue) {
@@ -77,7 +98,19 @@ void AMsPlayer::MoveRight(float InputValue) {
 }
 
 void AMsPlayer::TurnCamera(float InputValue) {
-    AddControllerYawInput(InputValue);
+    FRotator ControlRotation = GetControlRotation();
+    float NewYaw = ControlRotation.Yaw + InputValue * TurnSensitivity;
+
+    // Yaw 값 제한
+    if (NewYaw < MinYaw) {
+        NewYaw = MinYaw;
+    }
+    else if (NewYaw > MaxYaw) {
+        NewYaw = MaxYaw;
+    }
+
+    ControlRotation.Yaw = NewYaw;
+    GetController()->SetControlRotation(ControlRotation);
 }
 
 float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
@@ -102,7 +135,7 @@ void AMsPlayer::AddHP(float Amount) {
     }
 
     UE_LOG(LogMsPlayer, Warning, TEXT(" #### Health Modified: %f"), Life)
-    UpdateHPBar(Life);
+        UpdateHPBar(Life);
 }
 
 void AMsPlayer::UpdateHPBar(float CurrentHP) {

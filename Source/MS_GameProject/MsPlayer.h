@@ -35,7 +35,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Attack")
     void CallAttack();
-    
+
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -55,9 +55,18 @@ protected:
     float Speed;
 
     void MoveForward(float InputValue);
+    void LookUp(float InputValue);
     void MoveRight(float InputValue);
     void TurnCamera(float InputValue);
     void UpdateHPBar(float CurrentHP);
+
+    float TurnSensitivity;
+    float LookUpSensitivity;
+
+    float MinPitch;  // 최대 아래쪽 회전 각도
+    float MaxPitch;  // 최대 위쪽 회전 각도
+    float MinYaw;    // 최대 왼쪽 회전 각도
+    float MaxYaw;    // 최대 오른쪽 회전 각도
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMsPlayer, Log, All);
