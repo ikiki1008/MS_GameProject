@@ -42,9 +42,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "MSEnemy")
     void MoveRandomly();
 
-    //UPROPERTY(BlueprintReadWrite, Category = "MSEnemy")
-    //float Life;
-    //virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+    UPROPERTY(BlueprintReadWrite, Category = "MSEnemy")
+    float Life;
+
+    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
     virtual void BeginPlay() override;

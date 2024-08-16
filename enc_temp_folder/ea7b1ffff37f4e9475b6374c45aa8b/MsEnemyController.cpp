@@ -41,8 +41,6 @@ AMsEnemyController::AMsEnemyController()
     CapsuleComponent->SetupAttachment(RootComponent);
 
     bHasFoundMeshes = false;
-    //Life = 100;
-    IsEnemyDead = false;
 }
 
 void AMsEnemyController::BeginPlay()
@@ -52,6 +50,8 @@ void AMsEnemyController::BeginPlay()
     FindAndLogAllAIActorMeshes();
     IsAttacking = false;
     IsPlayerDetected = false;
+    IsEnemyDead = false;
+    Life = 100;
 
     // Set the timer to call CheckPerception every second
     GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AMsEnemyController::CheckPerception, 1.0f, true);
@@ -93,7 +93,7 @@ void AMsEnemyController::OnSensed(const TArray<AActor*>& UpdatedActors) {
                 UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Player detected and moving towards! *****"));
 
                 IsAttacking = true;
-                UGameplayStatics::ApplyDamage(Actor, 50.0f, this, GetPawn(), UDamageType::StaticClass());
+                UGameplayStatics::ApplyDamage(Actor, 25.0f, this, GetPawn(), UDamageType::StaticClass());
                 UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% Player overlapped and damaged from the front! %%%%"));
                 break;
             }
@@ -159,17 +159,16 @@ bool AMsEnemyController::IsPlayerDead(AActor* PlayerActor){
     return false;
 }
 
-//float AMsEnemyController::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
-//    float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-//
-//    Life -= ActualDamage;
-//    UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** enemy still alive *****"));
-//
-//    if (Life <= 0) {
-//        IsEnemyDead = true;
-//        K2_DestroyActor();
-//        UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** enemy dead *****"));
-//    }
-//
-//    return ActualDamage;
-//}
+float AMsEnemyController::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
+    float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+    Life -= ActualDamage; //플레이어 공격에 의한 데미지 깎임
+    UE_LOG(LogMsEnemyController, Warning, TEXT(" #### Enemies Current Life: %f"), Life); 
+
+    if (Life <= 0) {
+        IsEnemyDead = true; // enemy 죽을 시 true 값 반환
+        UE_LOG(LogMsEnemyController, Warning, TEXT(" #### Enemies Dead $$$$$ "));
+    }
+
+    return ActualDamage;
+}

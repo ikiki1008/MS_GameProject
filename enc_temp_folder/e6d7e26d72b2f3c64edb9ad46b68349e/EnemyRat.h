@@ -12,21 +12,16 @@ class MS_GAMEPROJECT_API AEnemyRat : public ACharacter
 public:
     AEnemyRat();
 
-    UPROPERTY(BlueprintReadWrite, Category = "Rat Life")
-    float Life;
     // MsEnemyController의 상태를 참조하는 변수
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "RatAnime")
     bool PlayerFound;
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "RatAnime")
     bool AttackToPlayer;
-    virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Dead")
+    bool IsRatDead;
 
 
 protected:
-
-    // 타이머 핸들러
-    FTimerHandle PerceptionTimerHandle;
-    FTimerHandle DieTimerHandle;
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
@@ -50,7 +45,8 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
     class USoundBase* Sound;
 
-    void DestroyActor();
+    // 타이머 핸들러
+    FTimerHandle PerceptionTimerHandle;
 };
 
 // log 선언

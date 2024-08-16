@@ -178,7 +178,7 @@ void AMsPlayer::CallAttack() {
         if (Monster) {
             APawn* Target = Cast<APawn>(Monster);
             if (Target && Target->GetController()->IsA(AMsEnemyController::StaticClass())) {
-                UGameplayStatics::ApplyDamage(Target, 50.0f, GetController(), this, UDamageType::StaticClass());
+                UGameplayStatics::ApplyDamage(Target, 100.0f, GetController(), this, UDamageType::StaticClass());
                 UE_LOG(LogMsPlayer, Warning, TEXT("player attacked!"));
             }
         }

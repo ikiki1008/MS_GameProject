@@ -22,9 +22,9 @@ AEnemyRat::AEnemyRat(){
         Sound = SoundCueFinder.Object;
     }
 
-    Life = 100.0f;
     PlayerFound = false;
     AttackToPlayer = false;
+    IsRatDead = false;
 }
 
 void AEnemyRat::BeginPlay(){
@@ -65,23 +65,6 @@ void AEnemyRat::UpdateSoundVolume(){
     }
 }
 
-void AEnemyRat::CheckPerception() {
-    AMsEnemyController* EnemyController = Cast<AMsEnemyController>(GetController());
-    if (EnemyController) {
-        PlayerFound = EnemyController->IsPlayerDetected;
-        AttackToPlayer = EnemyController->IsAttacking;
-
-        if (AttackToPlayer) {
-            UE_LOG(LogEnemyRat, Warning, TEXT(" ***** Player detected and attacking! *****"));
-            CallRatAttack(true);
-        }
-        else {
-            UE_LOG(LogEnemyRat, Warning, TEXT(" ***** rat is just walking around ...  *****"));
-            CallRatAttack(false);
-        }
-    }
-}
-
 void AEnemyRat::CallRatAttack(bool Attack) {
     UFunction* AttackMotion = FindFunction(TEXT("RatAttack"));
     UFunction* IdleMotion = FindFunction(TEXT("RatIdle"));
@@ -94,34 +77,35 @@ void AEnemyRat::CallRatAttack(bool Attack) {
     }
 }
 
-float AEnemyRat::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
-    float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-    // Update health or state here
-    Life -= ActualDamage;
-    if (Life <= 0) {
-        UE_LOG(LogEnemyRat, Warning, TEXT(" ***** enemy dead *****"));
-        CallRatDie();
-    }
-
-    return ActualDamage;
-}
-
 void AEnemyRat::CallRatDie() {
     UFunction* DeadMotion = FindFunction(TEXT("RatDead"));
-
+   
     if (DeadMotion) {
         ProcessEvent(DeadMotion, nullptr);
-        // 캡슐 컴포넌트를 블루프린트에서 참조
-        if (GetCapsuleComponent()){
-            GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            GetCapsuleComponent()->SetSimulatePhysics(false);
-        }
-        GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &AEnemyRat::DestroyActor, 2.0f, false);
         UE_LOG(LogEnemyRat, Warning, TEXT(" ***** rat  is dead... *****"));
     }
 }
 
-void AEnemyRat::DestroyActor() {
-    K2_DestroyActor();
+void AEnemyRat::CheckPerception(){
+    AMsEnemyController* EnemyController = Cast<AMsEnemyController>(GetController());
+    if (EnemyController){
+        PlayerFound = EnemyController->IsPlayerDetected;
+        AttackToPlayer = EnemyController->IsAttacking;
+        IsRatDead = EnemyController->IsEnemyDead;
+
+        if (IsRatDead) {
+            //MsEnemyController 를 통하여 ai 몬스터의 피가 0으로 깎였는지 확인.
+            CallRatDie();
+        }
+        else {
+            if (AttackToPlayer){
+                UE_LOG(LogEnemyRat, Warning, TEXT(" ***** Player detected and attacking! *****"));
+                CallRatAttack(true);
+            }
+            else {
+                UE_LOG(LogEnemyRat, Warning, TEXT(" ***** rat is just walking around ...  *****"));
+                CallRatAttack(false);
+            }
+        }
+    }
 }
