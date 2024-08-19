@@ -46,11 +46,6 @@ void AMsEnemyController::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (CapsuleComponent) {
-        CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AMsEnemyController::OnBeginOverlap);
-        CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &AMsEnemyController::OnEndOverlap);
-    }
-
     // 캐릭터의 크기에 맞게 캡슐 크기 설정
     AdjustCapsuleSize();
 
@@ -60,42 +55,6 @@ void AMsEnemyController::BeginPlay()
 
     // Set the timer to call CheckPerception every second
     GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AMsEnemyController::CheckPerception, 1.0f, true);
-}
-
-void AMsEnemyController::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-    bool bFromSweep, const FHitResult& SweepResult)
-{
-    if (OtherActor && OtherActor != this) {
-        AMsPlayer* Player = Cast<AMsPlayer>(OtherActor);
-        if (Player && IsPlayerDetected) {
-            IsPlayerDetected = true;
-
-            if (IsPlayerDetected) {
-                IsAttacking = true;
-                // 플레이어에게 피해를 입힘
-                UGameplayStatics::ApplyDamage(Player, 50.0f, this, GetPawn(), UDamageType::StaticClass());
-                UE_LOG(LogMsEnemyController, Warning, TEXT(" **** fish is attacking ****"));
-            }
-        }
-    }
-}
-
-void AMsEnemyController::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-    if (OtherActor && OtherActor != this) {
-        AMsPlayer* Player = Cast<AMsPlayer>(OtherActor);
-        if (Player && IsPlayerDetected) {
-            // 플레이어와의 겹침이 끝났을 때의 로직 처리
-            IsAttacking = false;
-            IsPlayerDetected = false;
-            UE_LOG(LogMsEnemyController, Warning, TEXT(" **** Player overlap ended ****"));
-
-            // 필요에 따라 추가 행동 예: 무작위 이동 시작
-            MoveRandomly();
-        }
-    }
 }
 
 void AMsEnemyController::AdjustCapsuleSize()
@@ -189,14 +148,9 @@ void AMsEnemyController::MoveRandomly()
 
 void AMsEnemyController::CheckPerception() {
     UE_LOG(LogMsEnemyController, Warning, TEXT(" ***** Checking perception *****"));
-    TArray<AActor*> UpdatedActors;
-    AIPerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), UpdatedActors);
-    for (AActor* Actor : UpdatedActors) {
-        if (Actor) {
-            UE_LOG(LogMsEnemyController, Warning, TEXT("Detected Actor: %s"), *Actor->GetName());
-        }
-    }
-    OnSensed(UpdatedActors);
+    TArray<AActor*> UpdatedActor;
+    AIPerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), UpdatedActor);
+    OnSensed(UpdatedActor);
 }
 
 bool AMsEnemyController::IsPlayerDead(AActor* PlayerActor) {
