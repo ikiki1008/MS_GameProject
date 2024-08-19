@@ -25,10 +25,10 @@ AMsPlayer::AMsPlayer()
     TurnSensitivity = 0.5f;
     LookUpSensitivity = 0.5f;
 
-    MinPitch = 0.0f;   // 아래로 최대 0도
+    MinPitch = -30.0f;   // 아래로 최대 0도
     MaxPitch = 90.0f;    // 위로 최대 90도
-    MinYaw = -180.0f;     // 왼쪽으로 최대 180도
-    MaxYaw = 180.0f;      // 오른쪽으로 최대 180도
+    MinYaw = -360.0f;     // 왼쪽으로 최대 180도
+    MaxYaw = 360.0f;      // 오른쪽으로 최대 180도
 
     GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMsPlayer::OnOverlapBegin);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMsPlayer::OnOverlapEnd);

@@ -16,15 +16,15 @@ public:
     AMsEnemyController();
 
     // 캡슐 컴포넌트
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MSEnemy")
     UCapsuleComponent* CapsuleComponent;
 
     // AI 인식 컴포넌트
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MSEnemy")
     UAIPerceptionComponent* AIPerceptionComponent;
 
     // 시야 설정
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MSEnemy")
     UAISenseConfig_Sight* SightConfig;
 
     // 플레이어를 발견했는지 여부를 나타내는 변수
@@ -42,9 +42,18 @@ public:
     UFUNCTION(BlueprintCallable, Category = "MSEnemy")
     void MoveRandomly();
 
-    //UPROPERTY(BlueprintReadWrite, Category = "MSEnemy")
-    //float Life;
-    //virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+    // 캡슐 크기 조정 함수
+    UFUNCTION(BlueprintCallable, Category = "MSEnemy")
+    void AdjustCapsuleSize();
+
+    UFUNCTION()
+    void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+        bool bFromSweep, const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
     virtual void BeginPlay() override;
@@ -62,12 +71,6 @@ protected:
 private:
     // 플레이어가 사망했는지 여부를 체크하는 함수
     bool IsPlayerDead(AActor* Player);
-
-    // 메쉬를 찾았는지를 나타내는 플래그
-    bool bHasFoundMeshes;
-
-    // 월드에서 메쉬를 찾아 로그를 남기는 함수
-    void FindAndLogAllAIActorMeshes();
 
     // 인식 타이머 핸들
     FTimerHandle PerceptionTimerHandle;

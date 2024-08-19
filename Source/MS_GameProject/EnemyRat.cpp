@@ -28,6 +28,7 @@ AEnemyRat::AEnemyRat(){
 }
 
 void AEnemyRat::BeginPlay(){
+    UE_LOG(LogEnemyRat, Warning, TEXT(" start "));
     Super::BeginPlay();
 
     if (Sound){
@@ -83,8 +84,8 @@ void AEnemyRat::CheckPerception() {
 }
 
 void AEnemyRat::CallRatAttack(bool Attack) {
-    UFunction* AttackMotion = FindFunction(TEXT("RatAttack"));
-    UFunction* IdleMotion = FindFunction(TEXT("RatIdle"));
+    UFunction* AttackMotion = FindFunction(TEXT("Attacking"));
+    UFunction* IdleMotion = FindFunction(TEXT("Idle"));
     if (Attack) {
         ProcessEvent(AttackMotion, nullptr);
         UE_LOG(LogEnemyRat, Warning, TEXT(" ***** rat  start attack! *****"));
@@ -108,7 +109,7 @@ float AEnemyRat::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 }
 
 void AEnemyRat::CallRatDie() {
-    UFunction* DeadMotion = FindFunction(TEXT("RatDead"));
+    UFunction* DeadMotion = FindFunction(TEXT("Dead"));
 
     if (DeadMotion) {
         ProcessEvent(DeadMotion, nullptr);
