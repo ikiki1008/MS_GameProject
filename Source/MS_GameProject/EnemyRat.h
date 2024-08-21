@@ -12,7 +12,7 @@ class MS_GAMEPROJECT_API AEnemyRat : public ACharacter
 public:
     AEnemyRat();
 
-    UPROPERTY(BlueprintReadWrite, Category = "Life")
+    UPROPERTY(EditAnywhere, Category = "Life")
     float Life;
     // MsEnemyController의 상태를 참조하는 변수
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Anime")
