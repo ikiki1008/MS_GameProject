@@ -21,6 +21,10 @@ public:
     bool AttackToPlayer;
     virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+    //enemy die motion
+    UFUNCTION(BlueprintCallable, Category = "Dead")
+    bool CallDie();
+
     //UFUNCTION(BlueprintCallable, Category = "Enemy")
     //void MoveRandomly();
 
@@ -41,10 +45,6 @@ private:
     //enemy arrack motion
     UFUNCTION(BlueprintCallable, Category = "Attack")
     void CallAttack(bool Attack);
-
-    //enemy die motion
-    UFUNCTION(BlueprintCallable, Category = "Dead")
-    void CallDie();
 
     //enemy Hit motion
     UFUNCTION(BlueprintCallable, Category = "Hit")
