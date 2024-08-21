@@ -41,9 +41,10 @@ private:
 
     void ReturnToOriginalPosition();
 
-    APawn* TargetPawn;
+    void CheckIfEnemyIsDead();
 
     FVector OriginalPosition; //원래 위치로 돌아가도록 위치를 저장하는 변수
+    FTimerHandle DeathCheckTimerHandle; //몬스터가 죽었는지 확인하는 타이머, 1초
 };
 
 // 로그 카테고리 선언

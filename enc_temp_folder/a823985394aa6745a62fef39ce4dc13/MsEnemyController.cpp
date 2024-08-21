@@ -33,13 +33,14 @@ void AMsEnemyController::OnPossess(APawn* InPawn) {
     }
     PlayerDetect = false;
     AttackPlayer = false; // 시작 시 false 설정
+
+    GetWorld()->GetTimerManager().SetTimer(DeathCheckTimerHandle, this, &AMsEnemyController::CheckIfEnemyIsDead, 1.0f, true);
 }
 
 void AMsEnemyController::OnSeePawn(APawn* DetectedPawn) {
     if (DetectedPawn && !IsPlayerDead(DetectedPawn)) {
         UE_LOG(LogMsEnemyController, Log, TEXT("Pawn seen: %s"), *DetectedPawn->GetName());
         PlayerDetect = true; // 플레이어 발견 시 true
-        TargetPawn = DetectedPawn;
 
         SetFocus(DetectedPawn);
         MoveToActor(DetectedPawn);
@@ -47,21 +48,10 @@ void AMsEnemyController::OnSeePawn(APawn* DetectedPawn) {
         FVector EnemyLocation = GetPawn()->GetActorLocation(); // 폰 위치
         FVector PlayerLocation = DetectedPawn->GetActorLocation(); // 플레이어 위치
         float DistanceToPlayer = FVector::Dist(EnemyLocation, PlayerLocation);
-        AEnemyRat* Enemy = Cast<AEnemyRat>(GetPawn());
 
-        if (DistanceToPlayer <= 80.0f) { // 두 거리간격이 80cm 이내일 경우
-
-            if (Enemy && Enemy->Life <= 0) {
-                UE_LOG(LogMsEnemyController, Warning, TEXT("Enemy is dead. Stopping attack."));
-                //GetWorld()->GetTimerManager().ClearTimer(DeathCheckTimerHandle); // 타이머 중지
-                AttackPlayer = false;
-                PlayerDetect = false;
-            }
-            else {
-                AttackPlayer = true;
-                UGameplayStatics::ApplyDamage(TargetPawn, 50.0f, this, GetPawn(), UDamageType::StaticClass());
-                UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% attack to player %%%%"));
-            }
+        if (DistanceToPlayer <= 80.0f && AttackPlayer) { // 두 거리간격이 80cm 이내일 경우
+            UGameplayStatics::ApplyDamage(DetectedPawn, 50.0f, this, GetPawn(), UDamageType::StaticClass());
+            UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% attack to player %%%%"));
         }
         else {
             MoveToActor(DetectedPawn);
@@ -84,6 +74,16 @@ void AMsEnemyController::ReturnToOriginalPosition() {
     PlayerDetect = false;
     AttackPlayer = false;
     ClearFocus(EAIFocusPriority::Gameplay);
+}
+
+void AMsEnemyController::CheckIfEnemyIsDead() {
+    AEnemyRat* ControlledRat = Cast<AEnemyRat>(GetPawn());
+    if (ControlledRat && ControlledRat->CallDie()) {
+        UE_LOG(LogMsEnemyController, Warning, TEXT("Enemy is dead. Stopping attack."));
+        AttackPlayer = false; // 몬스터가 죽었으므로 공격 중지
+        PlayerDetect = false;
+        GetWorld()->GetTimerManager().ClearTimer(DeathCheckTimerHandle); // 타이머 중지
+    }
 }
 
 bool AMsEnemyController::IsPlayerDead(AActor* PlayerActor) {

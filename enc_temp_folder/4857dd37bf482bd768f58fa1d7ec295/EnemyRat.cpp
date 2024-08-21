@@ -155,10 +155,8 @@ bool AEnemyRat::CallDie() {
         GetWorld()->GetTimerManager().ClearTimer(PerceptionTimerHandle);
         GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &AEnemyRat::DestroyActor, 4.0f, false);
         UE_LOG(LogEnemyRat, Warning, TEXT(" ***** enemy is dead... *****"));
-
-        return true;
     }
-    return false;
+    return true;
 }
 
 float AEnemyRat::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
