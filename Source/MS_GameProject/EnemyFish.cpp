@@ -51,8 +51,8 @@ void AEnemyFish::Tick(float DeltaTime)
 void AEnemyFish::CheckPerception() {
     AMsEnemyController* EnemyController = Cast<AMsEnemyController>(GetController());
     if (EnemyController) {
-        PlayerFound = EnemyController->IsPlayerDetected;
-        AttackToPlayer = EnemyController->IsAttacking;
+        PlayerFound = EnemyController->PlayerDetect;
+        AttackToPlayer = EnemyController->AttackPlayer;
 
         if (AttackToPlayer) {
                 UE_LOG(LogEnemyFish, Warning, TEXT(" ***** fish attacking to player *****"));
