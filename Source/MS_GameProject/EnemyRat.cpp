@@ -90,19 +90,6 @@ void AEnemyRat::CheckPerception() {
     }
 }
 
-//void AMsEnemyController::MoveRandomly()
-//{
-//    APawn* ControlledPawn = K2_GetPawn();
-//    UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-//    FVector RandomLocation;
-//    FVector CurrentLocation = ControlledPawn->GetActorLocation();
-//
-//    if (NavSystem) {
-//        NavSystem->K2_GetRandomReachablePointInRadius(GetWorld(), CurrentLocation, RandomLocation, 500.0f);
-//        UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, RandomLocation);
-//    }
-//}
-
 void AEnemyRat::CallAttack(bool Attack) {
     UFunction* AttackMotion = FindFunction(TEXT("Attacking"));
     UFunction* IdleMotion = FindFunction(TEXT("Idle"));

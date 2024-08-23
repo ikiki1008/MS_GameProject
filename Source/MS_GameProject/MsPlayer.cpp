@@ -75,8 +75,7 @@ void AMsPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAxis("MoveRight", this, &AMsPlayer::MoveRight);
     PlayerInputComponent->BindAxis("TurnCamera", this, &AMsPlayer::TurnCamera);
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMsPlayer::Jump);
-    PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMsPlayer::CallAttack);
-
+    PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMsPlayer::CallAttack); 
 }
 
 void AMsPlayer::MoveForward(float InputValue) {
