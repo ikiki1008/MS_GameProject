@@ -6,7 +6,9 @@ void UBlackSmithWidget::NativeConstruct() {
 
     if (textBox) {
         // 첫번째 텍스트 설정
-        textBox->SetText(FText::FromString("\nThere is a guy looks weird but has dirty sexy vibe.. \n He's trying to introduce himself.\n Now let's listen to what he says."));
+        //textBox->SetText(FText::FromString("\nThere is a guy looks weird but has dirty sexy vibe.. \n He's trying to introduce himself.\n Now let's listen to what he says."));
+        textBox->SetText(FText::FromString("\nOops, He's asking for 100 bucks but you ain't got money now \n How you gonna do now? \n"));
+
         textBox->SetForegroundColor(FLinearColor::White);
 
         // 텍스트 스타일 설정

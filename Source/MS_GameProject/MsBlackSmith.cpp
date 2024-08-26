@@ -44,5 +44,4 @@ void AMsBlackSmith::CreateWidget() {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating widget"));
         ProcessEvent(Widget, nullptr);
     }
-    //여기서 위젯 박스를 생성하고 플레이어에게 선택지가 주어진다
 }
