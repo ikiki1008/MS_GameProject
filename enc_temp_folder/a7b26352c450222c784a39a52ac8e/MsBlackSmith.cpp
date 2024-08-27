@@ -41,6 +41,11 @@ void AMsBlackSmith::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
         AMsPlayer* Player = Cast<AMsPlayer>(OtherActor);
         if (Player) {
             CreateWidgetBox();
+
+            // 블랙스미스와 플레이어 간의 거리 계산
+            //FVector BlackSmithLocation = GetActorLocation();
+            //FVector PlayerLocation = Player->GetActorLocation();
+            //float DistanceToPlayer = FVector::Dist(BlackSmithLocation, PlayerLocation);
         }
     }
 }
@@ -56,10 +61,10 @@ void AMsBlackSmith::Tick(float DeltaTime) {
 }
 
 void AMsBlackSmith::CreateWidgetBox() {
-    CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); //몽타주와 위젯이 실행되는동안 다른 이벤트가 발생하지 않도록 disable 처리
+    CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController) {
-        PlayerController->DisableInput(PlayerController); //몽타주와 위젯이 실행되는동안 다른 이벤트가 발생하지 않도록 disable 처리
+        PlayerController->DisableInput(PlayerController);
     }
 
     if (!IsWidgetOpen) {
@@ -73,7 +78,7 @@ void AMsBlackSmith::CreateWidgetBox() {
             AskingBigMoney();
         }
     }
-    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 12.0f, false); //12초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
+    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableCollision, 12.0f, false);
 }
 
 void AMsBlackSmith::MeetingFirst() {
@@ -83,6 +88,7 @@ void AMsBlackSmith::MeetingFirst() {
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating widget"));
         ProcessEvent(Widget, nullptr);
+        //GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::CheckWidgetOpen, 1.0f, true);
         IsMeetBlackSmith = true;
     }
 }
@@ -96,6 +102,7 @@ bool AMsBlackSmith::Introduce() {
         ProcessEvent(Widget, nullptr);
         IsFinishedIntro = true;
         return true;
+        //GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::CheckWidgetOpen, 1.0f, true);
     }
     return false;
 }
@@ -109,6 +116,7 @@ void AMsBlackSmith::AskingBigMoney() {
 
         ProcessEvent(Widget, nullptr);
         IsAskedForMoney = true;
+        //GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::CheckWidgetOpen, 1.0f, true);
     }
 }
 
@@ -122,7 +130,7 @@ void AMsBlackSmith::Ignore() {
     }
 }
 
-void AMsBlackSmith::EnableFunctions() {
+void AMsBlackSmith::EnableCollision() {
     if (PlayerController) {
         PlayerController->EnableInput(PlayerController);
     }

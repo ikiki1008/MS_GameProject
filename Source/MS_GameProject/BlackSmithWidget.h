@@ -15,5 +15,5 @@ public:
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
-	UMultiLineEditableTextBox* textBox; //textbox 변수 바인딩
+	UMultiLineEditableTextBox* MultiLine; //textbox 변수 바인딩
 };

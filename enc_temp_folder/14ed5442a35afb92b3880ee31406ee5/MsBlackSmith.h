@@ -55,7 +55,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* CollisionComponent;
 
-	void	EnableFunctions();
+	void	 EnableCollision();
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogBlackSmith, Log, All);
