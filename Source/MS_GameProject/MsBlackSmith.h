@@ -61,6 +61,7 @@ private:
 	void Ignore();
 	void Appreciating();
 	void Mission();
+	void Waiting();
 
 	UPROPERTY()
 	UUserWidget* BlackSmithWidget;

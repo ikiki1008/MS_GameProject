@@ -107,6 +107,9 @@ void AMsBlackSmith::CreateWidgetBox() {
         else if (IsAppreciated && !IsGaveMission) {
             Mission();
         }
+        else if (IsGaveMission) {
+            Waiting();
+        }
     }
 
     GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 12.0f, false); //12초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
@@ -169,6 +172,16 @@ void AMsBlackSmith::Appreciating() {
 void AMsBlackSmith::Mission() {
     BlackSmithText = FText::FromString(TEXT("\nHe's giving you advice how to get some stacks in this dungeon\nHe said there's a annoying creature in this lowest spot of dungeon...\nAnd that creature keep trying to get him out of here for no reason.\n Blacksmith keep tellin' you that you can get some coins after defeat it.\nLet's adventrue to find this creature now."));
     UFunction* Widget = FindFunction(TEXT("Mission"));
+    if (Widget) {
+        UE_LOG(LogBlackSmith, Warning, TEXT("start creating mission widget"));
+        ProcessEvent(Widget, nullptr);
+        IsGaveMission = true;
+    }
+}
+
+void AMsBlackSmith::Waiting() {
+    BlackSmithText = FText::FromString(TEXT("\nHe's wishing you a good luck... but you are feeling so off"));
+    UFunction* Widget = FindFunction(TEXT("Wait"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating mission widget"));
         ProcessEvent(Widget, nullptr);
