@@ -4,10 +4,15 @@
 #include "Components/Button.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "MsPlayer.h"
+#include "MsBlackSmith.h"
 #include "Kismet/GameplayStatics.h"
+
+DEFINE_LOG_CATEGORY(LogAccpOrIgnoreWidget);
 
 void UAccpOrIgnoreWidget::NativeConstruct() {
     Super::NativeConstruct();
+
+    Result = "";
 
     if (TextBox) {
         // 첫번째 텍스트 설정
@@ -32,8 +37,19 @@ void UAccpOrIgnoreWidget::NativeConstruct() {
 
         AMsPlayer* Player = Cast<AMsPlayer>(UGameplayStatics::GetPlayerPawn(this, 0));
         if (Player) {
-            Player->SetWidgetActive(true);
+            Player->SetWidgetActive(true); //플레이어 클래스로 위젯이 활성화 되었다는 값을 보낸다
             Player->ChooseWidget = this;
+        }
+
+        TArray<AActor*> FoundActors;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMsBlackSmith::StaticClass(), FoundActors);
+
+        if (FoundActors.Num() > 0) {
+            AMsBlackSmith* BlackSmith = Cast<AMsBlackSmith>(FoundActors[0]);
+            if (BlackSmith) {
+                BlackSmith->IsChooseWidgetActive(true);
+                BlackSmith->AccpOrIgnoreWidget = this;
+            }
         }
     }
 
@@ -43,21 +59,6 @@ void UAccpOrIgnoreWidget::NativeConstruct() {
     else {
         SetButtonFocus(BegBtn);
     }
-
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UAccpOrIgnoreWidget::CheckResult, 1.0f, true);
-
-    //UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(GetOwningPlayer(), this, EMouseLockMode::DoNotLock, false);
-   /* UWidgetBlueprintLibrary::SetFocusToGameViewport();*/
-}
-
-// Result 변수를 체크하는 함수
-void UAccpOrIgnoreWidget::CheckResult() {
-    if (Result.IsEmpty()) {
-        UE_LOG(LogTemp, Warning, TEXT("Result is null"));
-    }
-    else {
-        UE_LOG(LogTemp, Warning, TEXT("Result: %s"), *Result);
-    }
 }
 
 void UAccpOrIgnoreWidget::NativeDestruct(){
@@ -65,9 +66,20 @@ void UAccpOrIgnoreWidget::NativeDestruct(){
 
     AMsPlayer* Player = Cast<AMsPlayer>(UGameplayStatics::GetPlayerPawn(this, 0));
     if (Player){
-        Player->SetWidgetActive(false); // Set inactive when the widget is destroyed
-        Player->ChooseWidget = nullptr; // Clear the widget instance
+        Player->SetWidgetActive(false); 
+        Player->ChooseWidget = nullptr; //플레이어 클래스로 위젯이 닫혔다는 값을 보낸다
     }
+
+    //TArray<AActor*> FoundActors;
+    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMsBlackSmith::StaticClass(), FoundActors);
+
+    //if (FoundActors.Num() > 0) {
+    //    AMsBlackSmith* BlackSmith = Cast<AMsBlackSmith>(FoundActors[0]);
+    //    if (BlackSmith) {
+    //        BlackSmith->IsChooseWidgetActive(false);
+    //        BlackSmith->AccpOrIgnoreWidget = nullptr;
+    //    }
+    //}
 }
 
 void UAccpOrIgnoreWidget::SetButtonFocus(UButton* Button) {
@@ -89,10 +101,14 @@ FReply UAccpOrIgnoreWidget::NativeOnKeyDown(const FGeometry& InGeometry, const F
     }
     else if (KeyPressed == EKeys::E) {
         if (IgnoreBtn && IgnoreBtn->HasKeyboardFocus()) {
-            IgnoreBtn->OnPressed.Broadcast(); // Ignore 버튼 클릭 처리
+            Result = "Ignore";
+            IgnoreBtn->OnClicked.Broadcast(); // Ignore 버튼 클릭 처리
+            UE_LOG(LogAccpOrIgnoreWidget, Warning, TEXT("ignore btn clicked"));
         }
         else if (BegBtn && BegBtn->HasKeyboardFocus()) {
-            BegBtn->OnPressed.Broadcast(); // Beg 버튼 클릭 처리
+            Result = "Begging";
+            BegBtn->OnClicked.Broadcast(); // Beg 버튼 클릭 처리
+            UE_LOG(LogAccpOrIgnoreWidget, Warning, TEXT("begging btn clicked"));
         }
         return FReply::Handled();
     }

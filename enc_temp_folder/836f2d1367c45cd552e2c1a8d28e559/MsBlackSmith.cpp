@@ -101,12 +101,6 @@ void AMsBlackSmith::CreateWidgetBox() {
         else if (IsFinishedIntro && !IsAskedForMoney) {
             AskingBigMoney();
         }
-        else if (IsPrayed && !IsAppreciated) {
-            Appreciating();
-        }
-        else if (IsAppreciated && !IsGaveMission) {
-            Mission();
-        }
     }
 
     GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 12.0f, false); //12초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
@@ -152,17 +146,6 @@ void AMsBlackSmith::Ignore() {
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating ignore widget"));
         ProcessEvent(Widget, nullptr);
-        IsPrayed = true;
-    }
-}
-
-void AMsBlackSmith::Appreciating() {
-    BlackSmithText = FText::FromString(TEXT("\nHe's appreciating you for use his service....\n...But he seems not appreciated at all\nHe's about to explain how to get coins and so upgrade your weapon"));
-    UFunction* Widget = FindFunction(TEXT("Appreciate"));
-    if (Widget) {
-        UE_LOG(LogBlackSmith, Warning, TEXT("start creating Appreciate widget"));
-        ProcessEvent(Widget, nullptr);
-        IsAppreciated = true;
     }
 }
 
@@ -172,7 +155,7 @@ void AMsBlackSmith::Mission() {
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating mission widget"));
         ProcessEvent(Widget, nullptr);
-        IsGaveMission = true;
+
     }
 }
 

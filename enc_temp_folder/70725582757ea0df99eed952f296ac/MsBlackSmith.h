@@ -59,7 +59,6 @@ private:
 	bool Introduce();
 	void AskingBigMoney();
 	void Ignore();
-	void Appreciating();
 	void Mission();
 
 	UPROPERTY()
