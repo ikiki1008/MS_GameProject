@@ -27,6 +27,9 @@ void AMsBlackSmith::BeginPlay() {
     IsMeetBlackSmith = false;
     IsFinishedIntro = false;
     IsAskedForMoney = false;
+    IsPrayed = false;
+    IsAppreciated = false;
+    IsGaveMission = false;
 
     // 충돌 상자 설정 확인
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -72,6 +75,9 @@ void AMsBlackSmith::CreateWidgetBox() {
         else if (IsFinishedIntro && !IsAskedForMoney) {
             AskingBigMoney();
         }
+        //else if (IsAskedForMoney && !IsPrayed) {
+        //    Begging();
+        //}
     }
     GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 12.0f, false); //12초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
 }
@@ -102,7 +108,7 @@ bool AMsBlackSmith::Introduce() {
 
 void AMsBlackSmith::AskingBigMoney() {
 
-    BlackSmithText = FText::FromString(TEXT("\nHe's asking for 500 bucks at least\nBut you ain't got stacks...\nWhat would you do? You can just ignore and keep adventuring."));
+    //BlackSmithText = FText::FromString(TEXT("\nHe's asking for 500 bucks at least\nBut you ain't got stacks...\nWhat would you do? You can just ignore and keep adventuring."));
     UFunction* Widget = FindFunction(TEXT("Money"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating Money widget"));

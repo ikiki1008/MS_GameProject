@@ -36,6 +36,9 @@ private:
 	bool IsMeetBlackSmith;
 	bool IsFinishedIntro;
 	bool IsAskedForMoney;
+	bool IsPrayed;
+	bool IsAppreciated;
+	bool IsGaveMission;
 
 	FTimerHandle TimerHandle;
 
@@ -47,6 +50,7 @@ private:
 	bool Introduce();
 	void AskingBigMoney();
 	void Ignore();
+	void Begging();
 	void Mission();
 
 	UPROPERTY()

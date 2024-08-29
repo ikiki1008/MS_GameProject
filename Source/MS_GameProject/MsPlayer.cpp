@@ -19,6 +19,9 @@ AMsPlayer::AMsPlayer()
     Camera->SetupAttachment(RootComponent);
     Camera->bUsePawnControlRotation = true;
 
+    IsWidgetActive = false;
+    ChooseWidget = nullptr;
+
     MovementSpeed = 200.0f;
     Life = 1000.0f;
 
@@ -73,6 +76,8 @@ void AMsPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAxis("MoveForward", this, &AMsPlayer::MoveForward);
     PlayerInputComponent->BindAxis("LookUp", this, &AMsPlayer::LookUp);
     PlayerInputComponent->BindAxis("MoveRight", this, &AMsPlayer::MoveRight);
+    PlayerInputComponent->BindAxis("SelectLeft", this, &AMsPlayer::ChooseLeft);
+    PlayerInputComponent->BindAxis("SelectRight", this, &AMsPlayer::ChooseRight);
     PlayerInputComponent->BindAxis("TurnCamera", this, &AMsPlayer::TurnCamera);
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMsPlayer::Jump);
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMsPlayer::CallAttack); 
@@ -113,6 +118,28 @@ void AMsPlayer::TurnCamera(float InputValue) {
 
     ControlRotation.Yaw = NewYaw;
     GetController()->SetControlRotation(ControlRotation);
+}
+
+void AMsPlayer::ChooseLeft(float Value){ //버튼을 선택하는 위젯이 활성화 될때 잠시 방향키 (A,D) 를 선택키로 쓸수있게 한다
+    if (IsWidgetActive && ChooseWidget)
+    {
+        ChooseWidget->NavigateLeft();
+    }
+}
+
+void AMsPlayer::ChooseRight(float Value) {
+    if (IsWidgetActive && ChooseWidget)
+    {
+        ChooseWidget->NavigateRight();
+    }
+}
+
+void  AMsPlayer::SetWidgetActive(bool Active) { //현재 버튼 선택 위젯이 켜졌는지 확인한다
+    IsWidgetActive = Active;
+}
+
+bool AMsPlayer::IsWidgetActivated() const { //위젯 활성여부의 값을 return
+    return IsWidgetActive;
 }
 
 float AMsPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {

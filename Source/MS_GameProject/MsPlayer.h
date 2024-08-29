@@ -1,8 +1,9 @@
 #pragma once
-
+#include "AccpOrIgnoreWidget.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MsPlayer.generated.h"
+
 
 UCLASS()
 class MS_GAMEPROJECT_API AMsPlayer : public ACharacter
@@ -41,6 +42,20 @@ public:
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
     void AddHP(float Amount);
 
+    void MoveForward(float InputValue);
+    void LookUp(float InputValue);
+    void MoveRight(float InputValue);
+    void ChooseLeft(float InputValue);
+    void ChooseRight(float InputValue);
+    void TurnCamera(float InputValue);
+    void UpdateHPBar(float CurrentHP);
+
+    void SetWidgetActive(bool Active);
+    bool IsWidgetActivated() const;
+
+    bool IsWidgetActive;
+    UAccpOrIgnoreWidget* ChooseWidget;
+
 protected:
     UPROPERTY(EditAnywhere)
     class UCameraComponent* Camera;
@@ -53,12 +68,6 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float Speed;
-
-    void MoveForward(float InputValue);
-    void LookUp(float InputValue);
-    void MoveRight(float InputValue);
-    void TurnCamera(float InputValue);
-    void UpdateHPBar(float CurrentHP);
 
     float TurnSensitivity;
     float LookUpSensitivity;
