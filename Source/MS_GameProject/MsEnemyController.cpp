@@ -5,7 +5,6 @@
 #include "GameFramework/Character.h"
 #include "MsPlayer.h"
 #include "EnemyRat.h"
-#include "EnemyFish.h"
 #include "GameFramework/DamageType.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"

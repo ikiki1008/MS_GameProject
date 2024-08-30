@@ -185,7 +185,6 @@ void AMsBlackSmith::Waiting() {
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating mission widget"));
         ProcessEvent(Widget, nullptr);
-        IsGaveMission = true;
     }
 }
 
