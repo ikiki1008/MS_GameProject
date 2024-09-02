@@ -31,9 +31,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackSmithText")
 	FText BlackSmithText;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackSmithText")
 	bool IsWidgetOpen;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackSmithText")
+	bool IsWidgetClosed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackSmithText")
 	bool IsFinishedWidget;
 

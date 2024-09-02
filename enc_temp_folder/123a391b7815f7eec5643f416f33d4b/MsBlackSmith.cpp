@@ -61,12 +61,8 @@ bool AMsBlackSmith::SetWidgetActive() const {
 
 void AMsBlackSmith::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-    //UE_LOG(LogBlackSmith, Log, TEXT("IsWidgetOpen: %s"), IsWidgetOpen ? TEXT("True") : TEXT("False"));
     UE_LOG(LogBlackSmith, Log, TEXT("IsWidgetOpen: %s"), IsWidgetOpen ? TEXT("True") : TEXT("False"));
-
-    if (!IsWidgetOpen) {
-
-    }
+    UE_LOG(LogBlackSmith, Log, TEXT("IsWidgetClosed: %s"), IsWidgetClosed ? TEXT("True") : TEXT("False"));
 
     if (AccpOrIgnoreWidget && WidgetOpened) {
         FString Result = AccpOrIgnoreWidget->Result;
@@ -118,7 +114,7 @@ void AMsBlackSmith::CreateWidgetBox() {
         }
     }
 
-    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 10.0f, false); //10초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
+    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 12.0f, false); //12초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
 }
 
 void AMsBlackSmith::MeetingFirst() {
