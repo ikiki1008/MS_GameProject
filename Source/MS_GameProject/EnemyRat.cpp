@@ -38,7 +38,7 @@ void AEnemyRat::BeginPlay(){
 
     CallAttack(false);
     // 1초마다 CheckPerception 함수를 호출하는 타이머 설정
-    GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyRat::CheckPerception, 4.0f, true);
+    GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyRat::CheckPerception, 2.0f, true);
 }
 
 void AEnemyRat::Tick(float DeltaTime){

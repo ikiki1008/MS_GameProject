@@ -62,11 +62,6 @@ bool AMsBlackSmith::SetWidgetActive() const {
 void AMsBlackSmith::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
     //UE_LOG(LogBlackSmith, Log, TEXT("IsWidgetOpen: %s"), IsWidgetOpen ? TEXT("True") : TEXT("False"));
-    UE_LOG(LogBlackSmith, Log, TEXT("IsWidgetOpen: %s"), IsWidgetOpen ? TEXT("True") : TEXT("False"));
-
-    if (!IsWidgetOpen) {
-
-    }
 
     if (AccpOrIgnoreWidget && WidgetOpened) {
         FString Result = AccpOrIgnoreWidget->Result;
