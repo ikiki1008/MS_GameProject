@@ -2,6 +2,7 @@
 #include "MsPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "MsEnemyController.h"
+#include "MsMiniBossController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -207,9 +208,9 @@ void AMsPlayer::CallAttack() {
                 UGameplayStatics::ApplyDamage(Target, 100.0f, GetController(), this, UDamageType::StaticClass());
                 UE_LOG(LogMsPlayer, Warning, TEXT("player attacked!"));
             }
-            else {
+            else if (Target && Target->GetController()->IsA(AMsMiniBossController::StaticClass())) {
                 UGameplayStatics::ApplyDamage(Target, 100.0f, GetController(), this, UDamageType::StaticClass());
-                UE_LOG(LogMsPlayer, Warning, TEXT("player attacked!"));
+                UE_LOG(LogMsPlayer, Warning, TEXT("player attacked to mini boss!"));
             }
         }
     }

@@ -33,6 +33,7 @@ protected:
 	virtual void BeginPlay() override;
     FTimerHandle PerceptionTimerHandle;
     FTimerHandle DieTimerHandle;
+    FTimerHandle WaitTimerHandle;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -43,6 +44,8 @@ private:
     bool IsNoticed;
 
     void CheckPerception();
+
+    void SetMode();
 
     //enemy arrack motion
     UFUNCTION(BlueprintCallable, Category = "Attack")
@@ -60,4 +63,6 @@ private:
     void CallIdle();
 
     void DestroyActor();
+
+    void NoticedMotion();
 };

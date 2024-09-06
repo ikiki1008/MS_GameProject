@@ -45,11 +45,11 @@ void AMsMiniBossController::OnPossess(APawn* InPawn) {
     PlayerDetect = false;
     PlayerAttack = false;  // 시작 시 false 설정
 
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMsMiniBossController::CheckSituation, 1.0f, true);
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMsMiniBossController::CheckSituation, 3.0f, true);
 }
 
 void AMsMiniBossController::CheckSituation() {
-    if (TargetPawn) {
+    if (TargetPawn && !IsPlayerDead(TargetPawn)) {
         SetFocus(TargetPawn);
         MoveToActor(TargetPawn);
 
@@ -68,12 +68,16 @@ void AMsMiniBossController::CheckSituation() {
             PlayerAttack = true;
             UGameplayStatics::ApplyDamage(TargetPawn, 100.0f, this, GetPawn(), UDamageType::StaticClass());
             UE_LOG(LogMiniBossController, Warning, TEXT("attacked!!!"));
-
         }
         else {
             UE_LOG(LogMiniBossController, Warning, TEXT("enemy is further than 200cm."));
             MoveToActor(TargetPawn);
+            PlayerAttack = false;
         }
+    }
+    else {
+        //player dead
+        OnLoseSightOfPlayer();
     }
 }
 
@@ -94,14 +98,14 @@ void AMsMiniBossController::OnLoseSightOfPlayer() {
     PlayerDetect = false;
     PlayerAttack = false;
     ClearFocus(EAIFocusPriority::Gameplay);
-    ReturnToOriginalPosition();
+    //ReturnToOriginalPosition();
 }
 
-void AMsMiniBossController::ReturnToOriginalPosition() {
-    PlayerDetect = false;
-    PlayerAttack = false;
-    ClearFocus(EAIFocusPriority::Gameplay);
-}
+//void AMsMiniBossController::ReturnToOriginalPosition() {
+//    PlayerDetect = false;
+//    PlayerAttack = false;
+//    ClearFocus(EAIFocusPriority::Gameplay);
+//}
 
 bool AMsMiniBossController::IsPlayerDead(AActor* Player) {
     AMsPlayer* Crow = Cast<AMsPlayer>(Player);

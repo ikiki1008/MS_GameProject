@@ -207,6 +207,10 @@ void AMsPlayer::CallAttack() {
                 UGameplayStatics::ApplyDamage(Target, 100.0f, GetController(), this, UDamageType::StaticClass());
                 UE_LOG(LogMsPlayer, Warning, TEXT("player attacked!"));
             }
+            else {
+                UGameplayStatics::ApplyDamage(Target, 100.0f, GetController(), this, UDamageType::StaticClass());
+                UE_LOG(LogMsPlayer, Warning, TEXT("player attacked!"));
+            }
         }
     }
 

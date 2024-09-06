@@ -60,4 +60,6 @@ private:
     void CallIdle();
 
     void DestroyActor();
+
+    void NoticedMotion();
 };

@@ -35,16 +35,11 @@ private:
 	FTimerHandle TimerHandle;
 	FTimerHandle AttackTimerHandle;
 
-	//UFUNCTION()
-	//void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
-
 	UFUNCTION()
 	void OnTargetDetected(AActor* Actor, FAIStimulus Stimulus);  // 감지 이벤트 처리
 
 	UFUNCTION()
 	void OnLoseSightOfPlayer();  
-
-	void ReturnToOriginalPosition();  
 
 	void CheckSituation();
 

@@ -9,21 +9,22 @@ DEFINE_LOG_CATEGORY(LogMiniBoss);
 
 AEnemyMiniBoss::AEnemyMiniBoss(){
 	PrimaryActorTick.bCanEverTick = true;
-	Life = 800.0f;
-	//PlayerFound = false;
-	//AttackToPlayer = false;
-	IsNoticed = false;
 }
 
 void AEnemyMiniBoss::BeginPlay(){
 	Super::BeginPlay();
-	GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyMiniBoss::CheckPerception, 2.8f, true);
+	
+	Life = 1500.0f;
+	IsNoticed = false;
+	PlayerFound = false;
+	AttackToPlayer = false;
+
+	CheckPerception();
+	GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyMiniBoss::CheckPerception, 2.0f, true);
 }
 
-void AEnemyMiniBoss::Tick(float DeltaTime)
-{
+void AEnemyMiniBoss::Tick(float DeltaTime){
 	Super::Tick(DeltaTime);
-
 }
 
 void AEnemyMiniBoss::CheckPerception() {
@@ -34,25 +35,29 @@ void AEnemyMiniBoss::CheckPerception() {
 
 		if (PlayerFound) {
 			if (!IsNoticed) {
-				UFunction* StartFight = FindFunction(TEXT("RunToPlayer"));
-				if (StartFight) {
-					ProcessEvent(StartFight, nullptr);
-					IsNoticed = true;
-					UE_LOG(LogMiniBoss, Warning, TEXT(" ***** enemy noticed player! *****"));
-					GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AEnemyMiniBoss::CallRun, 2.1f, false);
-				}
-			}
-			if (AttackToPlayer) {
-				CallMiniBossAttack();
+				NoticedMotion();
 			}
 			else {
 				CallRun();
+				if (AttackToPlayer) {
+					CallMiniBossAttack();
+				}
+				else {
+					CallRun();
+				}
 			}
 		}
-		else {
-			UE_LOG(LogMiniBoss, Display, TEXT("does nothing cuz controller couldnt find anyone....."));
-		}
 	}
+	else {
+		CallIdle();
+	}
+}
+
+void AEnemyMiniBoss::NoticedMotion() {
+	UFunction* StartFight = FindFunction(TEXT("RunToPlayer"));
+	ProcessEvent(StartFight, nullptr);
+	IsNoticed = true;
+	UE_LOG(LogMiniBoss, Warning, TEXT(" ***** enemy noticed player! *****"));
 }
 
 void AEnemyMiniBoss::CallMiniBossAttack() {
@@ -99,11 +104,6 @@ bool AEnemyMiniBoss::CallDie() {
 	UFunction* DeadMotion = FindFunction(TEXT("Death"));
 	if (DeadMotion) {
 		ProcessEvent(DeadMotion, nullptr);
-
-		//if (GetCapsuleComponent()) {
-		//	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//	GetCapsuleComponent()->SetSimulatePhysics(false);
-		//}
 
 		GetWorld()->GetTimerManager().ClearTimer(PerceptionTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &AEnemyMiniBoss::DestroyActor, 6.0f, false);

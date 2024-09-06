@@ -9,16 +9,13 @@ DEFINE_LOG_CATEGORY(LogMiniBoss);
 
 AEnemyMiniBoss::AEnemyMiniBoss(){
 	PrimaryActorTick.bCanEverTick = true;
-
 	Life = 800.0f;
-	PlayerFound = false;
-	AttackToPlayer = false;
 	IsNoticed = false;
 }
 
 void AEnemyMiniBoss::BeginPlay(){
 	Super::BeginPlay();
-	GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyMiniBoss::CheckPerception, 1.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyMiniBoss::CheckPerception, 3.0f, true);
 }
 
 void AEnemyMiniBoss::Tick(float DeltaTime)
@@ -35,24 +32,32 @@ void AEnemyMiniBoss::CheckPerception() {
 
 		if (PlayerFound) {
 			if (!IsNoticed) {
-				UFunction* StartFight = FindFunction(TEXT("RunToPlayer"));
-				if (StartFight) {
-					ProcessEvent(StartFight, nullptr);
-					IsNoticed = true;
-					UE_LOG(LogMiniBoss, Warning, TEXT(" ***** enemy noticed player! *****"));
-					GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AEnemyMiniBoss::CallRun, 2.1f, false);
+				NoticedMotion();
+			}
+			else {
+				if (AttackToPlayer) {
+					CallMiniBossAttack();
+				}
+				else {
+					CallRun();
 				}
 			}
-			CallRun();
-		}
-		else if (AttackToPlayer) {
-			UE_LOG(LogMiniBoss, Display, TEXT("lets start attack!"));
-			CallMiniBossAttack();
 		}
 		else {
 			UE_LOG(LogMiniBoss, Display, TEXT("does nothing cuz controller couldnt find anyone....."));
 		}
 	}
+	else {
+		CallIdle(); //player found - false.. go back to point
+	}
+}
+
+void AEnemyMiniBoss::NoticedMotion() {
+	UFunction* StartFight = FindFunction(TEXT("RunToPlayer"));
+	ProcessEvent(StartFight, nullptr);
+	IsNoticed = true;
+	UE_LOG(LogMiniBoss, Warning, TEXT(" ***** enemy noticed player! *****"));
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AEnemyMiniBoss::CallRun, 3.0f, false);
 }
 
 void AEnemyMiniBoss::CallMiniBossAttack() {
@@ -100,11 +105,6 @@ bool AEnemyMiniBoss::CallDie() {
 	if (DeadMotion) {
 		ProcessEvent(DeadMotion, nullptr);
 
-		//if (GetCapsuleComponent()) {
-		//	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//	GetCapsuleComponent()->SetSimulatePhysics(false);
-		//}
-
 		GetWorld()->GetTimerManager().ClearTimer(PerceptionTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &AEnemyMiniBoss::DestroyActor, 6.0f, false);
 
@@ -115,7 +115,7 @@ bool AEnemyMiniBoss::CallDie() {
 
 float AEnemyMiniBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
+	UE_LOG(LogMiniBoss, Warning, TEXT(" ***** Hit!!! *****"));
 	// Update health or state here
 	Life -= ActualDamage;
 	CallHit();

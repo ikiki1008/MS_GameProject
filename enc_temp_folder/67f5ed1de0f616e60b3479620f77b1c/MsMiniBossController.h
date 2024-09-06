@@ -33,9 +33,7 @@ protected:
 
 private:
 	FTimerHandle TimerHandle;
-
-	//UFUNCTION()
-	//void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	FTimerHandle AttackTimerHandle;
 
 	UFUNCTION()
 	void OnTargetDetected(AActor* Actor, FAIStimulus Stimulus);  // 감지 이벤트 처리
@@ -46,6 +44,8 @@ private:
 	void ReturnToOriginalPosition();  
 
 	void CheckSituation();
+
+	void PerformAttack();
 
 	APawn* TargetPawn; 
 
