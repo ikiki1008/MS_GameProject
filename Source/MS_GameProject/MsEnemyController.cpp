@@ -17,9 +17,8 @@ AMsEnemyController::AMsEnemyController(){
     PrimaryActorTick.bCanEverTick = true;
 
     PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("MsPawnSensingComponent"));
-    PawnSensingComponent->SightRadius = 500.0f;
     PawnSensingComponent->SetPeripheralVisionAngle(180.0f);
-
+    PawnSensingComponent->SightRadius = 500.0f;
     PawnSensingComponent->OnSeePawn.AddDynamic(this, &AMsEnemyController::OnSeePawn);
 }
 
@@ -30,6 +29,12 @@ void AMsEnemyController::OnPossess(APawn* InPawn) {
         UE_LOG(LogMsEnemyController, Warning, TEXT("Pawn Possessed: %s"), *InPawn->GetName());
         OriginalPosition = InPawn->GetActorLocation();
     }
+
+    AEnemyRat* Enemy = Cast<AEnemyRat>(GetPawn());
+    if (Enemy && Enemy->Special) { //아이템을 주는 스페셜 몬스터인지 확인
+        SpecialMonster = Enemy->Special;
+    }
+
     PlayerDetect = false;
     AttackPlayer = false; // 시작 시 false 설정
 }
@@ -48,22 +53,42 @@ void AMsEnemyController::OnSeePawn(APawn* DetectedPawn) {
         float DistanceToPlayer = FVector::Dist(EnemyLocation, PlayerLocation);
         AEnemyRat* Enemy = Cast<AEnemyRat>(GetPawn());
 
-        if (DistanceToPlayer <= 80.0f) { // 두 거리간격이 80cm 이내일 경우
-
-            if (Enemy && Enemy->Life <= 0) {
-                UE_LOG(LogMsEnemyController, Warning, TEXT("Enemy is dead. Stopping attack."));
-                //GetWorld()->GetTimerManager().ClearTimer(DeathCheckTimerHandle); // 타이머 중지
-                AttackPlayer = false;
-                PlayerDetect = false;
+        if (SpecialMonster) {
+            Damage = 200.0f;
+            if (DistanceToPlayer <= 150.0f) {
+                if (Enemy && Enemy->Life <= 0) {
+                    UE_LOG(LogMsEnemyController, Warning, TEXT("Enemy is dead. Stopping attack."));
+                    AttackPlayer = false;
+                    PlayerDetect = false;
+                }
+                else {
+                    AttackPlayer = true;
+                    UGameplayStatics::ApplyDamage(TargetPawn, Damage, this, GetPawn(), UDamageType::StaticClass());
+                    UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% special attack to player %%%%"));
+                }
             }
             else {
-                AttackPlayer = true;
-                UGameplayStatics::ApplyDamage(TargetPawn, 50.0f, this, GetPawn(), UDamageType::StaticClass());
-                UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% attack to player %%%%"));
+                MoveToActor(DetectedPawn);
             }
         }
         else {
-            MoveToActor(DetectedPawn);
+            Damage = 50.0f;
+            if (DistanceToPlayer <= 80.0f) { // 두 거리간격이 80cm 이내일 경우
+                if (Enemy && Enemy->Life <= 0) {
+                    UE_LOG(LogMsEnemyController, Warning, TEXT("Enemy is dead. Stopping attack."));
+                    AttackPlayer = false;
+                    PlayerDetect = false;
+                }
+                else {
+                    AttackPlayer = true;
+                    UGameplayStatics::ApplyDamage(TargetPawn, Damage, this, GetPawn(), UDamageType::StaticClass());
+                    UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%% attack to player %%%%"));
+                }
+            }
+            else {
+                UE_LOG(LogMsEnemyController, Warning, TEXT(" %%%%  is it here???? %%%%"));
+                MoveToActor(DetectedPawn);
+            }
         }
     }
     else {

@@ -14,6 +14,10 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Life")
     float Life;
+
+    UPROPERTY(EditAnywhere, Category = "IsSpecial")
+    bool Special;
+
     // MsEnemyController의 상태를 참조하는 변수
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Anime")
     bool PlayerFound;

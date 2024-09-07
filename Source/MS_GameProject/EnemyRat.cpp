@@ -23,6 +23,7 @@ AEnemyRat::AEnemyRat(){
     }
 
     Life = 150.0f;
+    Special = false;
     PlayerFound = false;
     AttackToPlayer = false;
 }
@@ -35,7 +36,7 @@ void AEnemyRat::BeginPlay(){
         AudioComponent->SetSound(Sound);
         AudioComponent->Play();
     }
-
+    
     CallAttack(false);
     // 1초마다 CheckPerception 함수를 호출하는 타이머 설정
     GetWorld()->GetTimerManager().SetTimer(PerceptionTimerHandle, this, &AEnemyRat::CheckPerception, 2.0f, true);

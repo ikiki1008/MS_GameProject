@@ -44,7 +44,13 @@ private:
     APawn* TargetPawn;
 
     FVector OriginalPosition; //원래 위치로 돌아가도록 위치를 저장하는 변수
+
+    bool SpecialMonster; //아이템을 반환하는 특수한 몬스터인가?
+
+    float Radius; //sightRadius 반경
+
+    float Damage;
+
 };
 
-// 로그 카테고리 선언
 DECLARE_LOG_CATEGORY_EXTERN(LogMsEnemyController, Log, All);
