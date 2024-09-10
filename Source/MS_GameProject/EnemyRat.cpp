@@ -144,6 +144,10 @@ bool AEnemyRat::CallDie() {
         GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &AEnemyRat::DestroyActor, 4.0f, false);
         UE_LOG(LogEnemyRat, Warning, TEXT(" ***** enemy is dead... *****"));
 
+        if (Special) {
+            //drop the items...
+        }
+
         return true;
     }
     return false;

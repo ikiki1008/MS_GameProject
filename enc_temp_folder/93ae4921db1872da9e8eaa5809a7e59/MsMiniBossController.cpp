@@ -23,6 +23,7 @@ AMsMiniBossController::AMsMiniBossController() {
     SightConfig->PeripheralVisionAngleDegrees = 360.0f;  // 360도 감지
     SightConfig->SetMaxAge(5.0f);  // 감지 지속 시간
 
+    // 감지할 대상의 타입 설정 (플레이어만 감지하도록 설정)
     SightConfig->DetectionByAffiliation.bDetectEnemies = true;
     SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
     SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
@@ -42,8 +43,7 @@ void AMsMiniBossController::OnPossess(APawn* InPawn) {
     }
 
     PlayerDetect = false;
-    PlayerAttack = false;  
-    IsPlayerNear = false;
+    PlayerAttack = false;  // 시작 시 false 설정
 }
 
 void AMsMiniBossController::Tick(float DeltaTime) {
@@ -59,23 +59,21 @@ void AMsMiniBossController::Tick(float DeltaTime) {
             UE_LOG(LogMiniBossController, Warning, TEXT("Enemy is dead. Stopping attack."));
             StopMovement();
             ClearFocus(EAIFocusPriority::Gameplay);
-            if (GetWorld()->GetTimerManager().IsTimerActive(TimerHandle)) {
-                GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-            }
             PlayerAttack = false;
             PlayerDetect = false;
             return;
         }
 
         if (DistanceToPlayer <= 100.0f) {
-            IsPlayerNear = true;
+            UE_LOG(LogMiniBossController, Warning, TEXT("enemy is less than 100cm."));
+            GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMsMiniBossController::CheckSituation, 2.0f, true);
         }
         else {
-            IsPlayerNear = false;
+            UE_LOG(LogMiniBossController, Warning, TEXT("enemy is further than 100cm."));
+            PlayerAttack = false;
+            GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+            MoveToActor(TargetPawn);
         }
-    }
-    else {
-        OnLoseSightOfPlayer();
     }
 }
 
@@ -85,27 +83,23 @@ void AMsMiniBossController::OnTargetDetected(AActor* Actor, FAIStimulus Stimulus
         UE_LOG(LogMiniBossController, Log, TEXT("Player detected: %s"), *Actor->GetName());
         PlayerDetect = true;
         TargetPawn = Cast<APawn>(Actor);
-        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMsMiniBossController::CheckSituation, 2.0f, true);
+        SetFocus(TargetPawn);
+        MoveToActor(TargetPawn);
     }
     else {
         PlayerDetect = false;
+        OnLoseSightOfPlayer();
     }
 }
 
 void AMsMiniBossController::CheckSituation() {
-    SetFocus(TargetPawn);
-    MoveToActor(TargetPawn);
-
-    if (IsPlayerNear) {
-        PlayerAttack = true;
-        UGameplayStatics::ApplyDamage(TargetPawn, 100.0f, this, GetPawn(), UDamageType::StaticClass());
-    }
-    else {
-        MoveToActor(TargetPawn);
-    }
+    UE_LOG(LogMiniBossController, Warning, TEXT("Attack!!!!"));
+    PlayerAttack = true;
+    UGameplayStatics::ApplyDamage(TargetPawn, 100.0f, this, GetPawn(), UDamageType::StaticClass());
 }
 
 void AMsMiniBossController::OnLoseSightOfPlayer() {
+    UE_LOG(LogMiniBossController, Log, TEXT("Lost sight of the player."));
     PlayerDetect = false;
     PlayerAttack = false;
     ClearFocus(EAIFocusPriority::Gameplay);

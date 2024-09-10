@@ -39,7 +39,7 @@ void AMsEnemyController::OnPossess(APawn* InPawn) {
     AttackPlayer = false; // 시작 시 false 설정
 }
 
-void AMsEnemyController::OnSeePawn(APawn* DetectedPawn) {
+void AMsEnemyController::OnSeePawn(APawn* DetectedPawn) { 
     if (DetectedPawn && !IsPlayerDead(DetectedPawn)) {
         UE_LOG(LogMsEnemyController, Log, TEXT("Pawn seen: %s"), *DetectedPawn->GetName());
         PlayerDetect = true; // 플레이어 발견 시 true

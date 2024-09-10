@@ -36,10 +36,7 @@ protected:
 	UAISenseConfig_Sight* SightConfig;  // Sight Configuration
 
 private:
-	bool IsPlayerNear;
-
 	FTimerHandle TimerHandle;
-	
 	FTimerHandle AttackTimerHandle;
 
 	UFUNCTION()

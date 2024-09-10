@@ -104,10 +104,14 @@ bool AEnemyMiniBoss::CallDie() {
 	UFunction* DeadMotion = FindFunction(TEXT("Death"));
 	if (DeadMotion) {
 		ProcessEvent(DeadMotion, nullptr);
-
+		UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (MovementComponent) {
+			MovementComponent->DisableMovement(); // 움직임 비활성화
+			//MovementComponent->StopMovementImmediately(); // 현재 움직임 멈추기
+		}
+		
 		GetWorld()->GetTimerManager().ClearTimer(PerceptionTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &AEnemyMiniBoss::DestroyActor, 6.0f, false);
-
 		return true;
 	}
 	return false;
