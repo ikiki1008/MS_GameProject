@@ -15,6 +15,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Components")
     class USphereComponent* GetSphereComponent() const;
 
+    UPROPERTY(EditAnywhere)
+    bool IsItem;
+
 protected:
     virtual void BeginPlay() override;
 

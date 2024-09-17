@@ -21,6 +21,8 @@ void AMsHealFoods::BeginPlay()
     if (SphereComponent) {
         SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AMsHealFoods::OnOverlapBegin);
     }
+
+    IsItem = false;
 }
  
 void AMsHealFoods::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -28,8 +30,16 @@ void AMsHealFoods::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
     if (OtherActor && (OtherActor != this)) {
         AMsPlayer* MainPlayer = Cast<AMsPlayer>(OtherActor);
         if (MainPlayer) {
-            MainPlayer->AddHP(100); // Adjust health by 100
-            Destroy(); // Destroy the heal food actor
+
+            if (IsItem) { //if its coins or item
+                //call User's inventory widget and add money or new weapon
+
+                Destroy();
+            }
+            else {
+                MainPlayer->AddHP(100); // Adjust health by 100
+                Destroy(); // Destroy the heal food actor
+            }
         }
     }
 }
