@@ -16,8 +16,7 @@ void UAccpOrIgnoreWidget::NativeConstruct() {
 
     if (TextBox) {
         // 첫번째 텍스트 설정
-        TextBox->SetText(FText::FromString("\nHe's asking for 500 bucks at least\nBut you ain't got stacks...\nWhat would you do? You can just ignore and keep adventuring"));
-        TextBox->SetForegroundColor(FLinearColor::White);
+        //TextBox->SetText(FText::FromString("\nHe's asking for 500 bucks at least\nBut you ain't got stacks...\nWhat would you do? You can just ignore and keep adventuring"));
 
         // 텍스트 스타일 설정
         FTextBlockStyle TextStyle = TextBox->WidgetStyle.TextStyle;
@@ -26,6 +25,8 @@ void UAccpOrIgnoreWidget::NativeConstruct() {
         TextStyle.SetShadowColorAndOpacity(FLinearColor(0, 0, 0, 0.5f));  // 그림자 색과 투명도 설정
 
         TextBox->SetTextStyle(TextStyle);
+        //TextBox->SetText(FText::FromString("\n그는 무리하게 높은 돈을 요구한다.\n하지만 당신은 오로지 몸과 무기, 패기만 가지고 온 용사이다.\n어떻게 하겠는가? 당신은 대장장이에게 빌거나 무시하고 지나갈 수 있다."));
+        TextBox->SetForegroundColor(FLinearColor::White);
 
         // 배경을 완전히 투명하게 설정
         FSlateBrush TransparentBrush;

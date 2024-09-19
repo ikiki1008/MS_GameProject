@@ -1,4 +1,4 @@
-#include "MsBlackSmith.h"
+﻿#include "MsBlackSmith.h"
 #include "BlackSmithWidget.h"
 #include "MsPlayer.h"
 #include "GameFramework/Actor.h"
@@ -11,13 +11,13 @@ AMsBlackSmith::AMsBlackSmith()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    // ������ �ݸ��� ������Ʈ �ʱ�ȭ
+    // 오버랩 콜리전 컴포넌트 초기화
     CollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComponent"));
     CollisionComponent->InitBoxExtent(FVector(50.0f, 50.0f, 50.0f));
     CollisionComponent->SetCollisionProfileName(TEXT("Trigger"));
     CollisionComponent->SetupAttachment(RootComponent);
 
-    // ������ �̺�Ʈ ���ε�
+    // 오버랩 이벤트 바인딩
     CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AMsBlackSmith::OnOverlapBegin);
 }
 
@@ -34,7 +34,7 @@ void AMsBlackSmith::BeginPlay() {
     WidgetOpened = false;
     AccpOrIgnoreWidget = nullptr;
 
-    // �浹 ���� ���� Ȯ��
+    // 충돌 상자 설정 확인
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap);
@@ -65,7 +65,7 @@ void AMsBlackSmith::Tick(float DeltaTime) {
 
     if (AccpOrIgnoreWidget && WidgetOpened) {
         FString Result = AccpOrIgnoreWidget->Result;
-        UE_LOG(LogBlackSmith, Warning, TEXT("Current Result: %s"), *Result);  // ���� Result ���� �α׷� ���
+        UE_LOG(LogBlackSmith, Warning, TEXT("Current Result: %s"), *Result);  // 현재 Result 값을 로그로 출력
 
         if (Result.Equals("")) {
             UE_LOG(LogBlackSmith, Warning, TEXT("result empty...."));
@@ -86,10 +86,10 @@ void AMsBlackSmith::Tick(float DeltaTime) {
 }
 
 void AMsBlackSmith::CreateWidgetBox() {
-    CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); //��Ÿ�ֿ� ������ ����Ǵµ��� �ٸ� �̺�Ʈ�� �߻����� �ʵ��� disable ó��
+    CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); //몽타주와 위젯이 실행되는동안 다른 이벤트가 발생하지 않도록 disable 처리
     PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController) {
-        PlayerController->DisableInput(PlayerController); //��Ÿ�ֿ� ������ ����Ǵµ��� �ٸ� �̺�Ʈ�� �߻����� �ʵ��� disable ó��
+        PlayerController->DisableInput(PlayerController); //몽타주와 위젯이 실행되는동안 다른 이벤트가 발생하지 않도록 disable 처리
     }
 
     if (!IsWidgetOpen) {
@@ -113,11 +113,11 @@ void AMsBlackSmith::CreateWidgetBox() {
         }
     }
 
-    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 10.0f, false); //10�� �� EnableFunctions �Լ��� ȣ���Ͽ� �ݸ����� �̺�ƮŬ���� ����Ѵ�
+    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMsBlackSmith::EnableFunctions, 10.0f, false); //10초 후 EnableFunctions 함수를 호출하여 콜리전과 이벤트클릭을 허용한다
 }
 
 void AMsBlackSmith::MeetingFirst() {
-    BlackSmithText = FText::FromString(TEXT("\nThere is a guy who looks weird but has a dirty sexy vibe..\nHe's trying to introduce himself.\nNow let's listen to what he says."));
+    BlackSmithText = FText::FromString(TEXT("\n이상하지만 묘하게 섹시한 기운을 지닌 남자가 있다..\n그는 당신에게 무언가 말을 하려는 듯 하다.\n가까이 다가가 그의 얘기를 들어보자."));
     UFunction* Widget = FindFunction(TEXT("Widget"));
 
     if (Widget) {
@@ -128,7 +128,7 @@ void AMsBlackSmith::MeetingFirst() {
 }
 
 bool AMsBlackSmith::Introduce() {
-    BlackSmithText = FText::FromString(TEXT("\nHe's introducing himself as a 'BETIFOL' Blacksmith\n...He seems little bit shy but he can help you to upgrade your weapon\nLet's ask him out for a help."));
+    BlackSmithText = FText::FromString(TEXT("\n그는 자신을 이곳 지하 던전의 대장장이라고 소개 한다..\n...묘하게 쑥쓰러워 하는 몸짓이 이상하지만 그는 당신의 무기를 업그레이드 시킬 수 있다.\n그에게 도움을 요청해 보자."));
     UFunction* Widget = FindFunction(TEXT("Introduce"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating introducing widget"));
@@ -151,7 +151,7 @@ void AMsBlackSmith::AskingBigMoney() {
 }
 
 void AMsBlackSmith::Ignore() {
-    BlackSmithText = FText::FromString(TEXT("\nNow he's begging you so bad\nHe said he just got pranked you and actually he's so poor can't even go shopping...\nLet's listen what he suggest."));
+    BlackSmithText = FText::FromString(TEXT("\n갑자기 그가 최선을 다해 빌기 시작한다.\n그는 장난을 쳐본거라며 사실 자기도 돈이 없어 쇼핑도 못 가고 있다고 한다...\n그가 제안하는 부탁을 들어보자."));
     UFunction* Widget = FindFunction(TEXT("Beg"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating ignore widget"));
@@ -161,7 +161,7 @@ void AMsBlackSmith::Ignore() {
 }
 
 void AMsBlackSmith::Appreciating() {
-    BlackSmithText = FText::FromString(TEXT("\nHe's appreciating you for use his service....\n...But he seems not appreciated at all\nHe's about to explain how to get coins and so upgrade your weapon"));
+    BlackSmithText = FText::FromString(TEXT("\n그는 자신의 제안을 들어주는 것에 대해 감사를 표한다....\n...하지만 묘하게 사과가 불충분하다.\n그는 이 지하 던전에서 어떻게 돈을 얻을 수 있는 지 알려 주려 한다."));
     UFunction* Widget = FindFunction(TEXT("Appreciate"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating Appreciate widget"));
@@ -171,7 +171,7 @@ void AMsBlackSmith::Appreciating() {
 }
 
 void AMsBlackSmith::Mission() {
-    BlackSmithText = FText::FromString(TEXT("\nHe's giving you advice how to get some stacks in this dungeon\nHe said there's a annoying creature in this lowest spot of dungeon...\nAnd that creature keep trying to get him out of here for no reason.\n Blacksmith keep tellin' you that you can get some coins after defeat it.\nLet's adventrue to find this creature now."));
+    BlackSmithText = FText::FromString(TEXT("\n지하 던전 아주 깊숙한 곳에 대장장이를 귀찮게 하는 몬스터가 있다고 한다.\n몬스터는 호시탐탐 대장장이를 지하던전에서 내쫒으려고 기회를 엿본다고 한다..\n 대장장이는 해당 몬스터를 무찌르면 돈을 얻을 수 있다고 귀뜸해준다.\n이제 던전의 깊은 곳 으로 향하여 모험을 떠나 보자."));
     UFunction* Widget = FindFunction(TEXT("Mission"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating mission widget"));
@@ -181,7 +181,7 @@ void AMsBlackSmith::Mission() {
 }
 
 void AMsBlackSmith::Waiting() {
-    BlackSmithText = FText::FromString(TEXT("\nHe's wishing you a good luck... but you are feeling so off"));
+    BlackSmithText = FText::FromString(TEXT("\n그가 잘 다녀라오라고 마중을 해준다.... 하지만 기분이 미묘하다."));
     UFunction* Widget = FindFunction(TEXT("Wait"));
     if (Widget) {
         UE_LOG(LogBlackSmith, Warning, TEXT("start creating mission widget"));
